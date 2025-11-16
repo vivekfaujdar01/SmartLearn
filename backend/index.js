@@ -1,9 +1,13 @@
 import dotenv from 'dotenv';
+import app from './app.js';
+
 
 dotenv.config({
     path: "./.env"
 });
 
-const username = process.env.username;
+const PORT = process.env.PORT || 3000;
 
-console.log(`Username from .env file: ${username}`);
+app.listen(PORT, ()=>{
+    console.log(`Server is running on port http://localhost:${PORT}`);
+})
