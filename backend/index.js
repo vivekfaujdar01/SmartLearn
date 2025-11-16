@@ -1,1 +1,9 @@
-console.log("This is the server file where we will set up our server."); 
+import dotenv from 'dotenv';
+
+dotenv.config({
+    path: "./.env"
+});
+
+const username = process.env.username;
+
+console.log(`Username from .env file: ${username}`);
