@@ -1,0 +1,20 @@
+{
+  "name": "smartlearn",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/vivekfaujdar01/SmartLearn#readme",
+  "bugs": {
+    "url": "https://github.com/vivekfaujdar01/SmartLearn/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vivekfaujdar01/SmartLearn.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
