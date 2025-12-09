@@ -3,8 +3,9 @@ import cors from 'cors';
 
 // import your auth routes
 import authRoutes from './routes/authRoutes.js';
-
 import userRoutes from './routes/userRoutes.js';
+import courseRoutes from './routes/courseRoutes.js';
+
 const app = express();
 
 // basic express middlewares for parsing json and urlencoded data
@@ -22,6 +23,7 @@ app.use(cors({
 // mount routes here 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/courses', courseRoutes);
 
 // test route
 app.get('/', (req, res)=>{
