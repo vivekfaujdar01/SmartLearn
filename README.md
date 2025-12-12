@@ -57,3 +57,16 @@ Following are the routes i have implemented so far:
 - Auth routes:
   - POST api/auth/register - User registration // Public route
   - POST api/auth/login - User login // Public route
+  - GET api/users/me - Get current user profile // Protected route
+    Headers:
+    Authorization: Bearer <PASTE_TOKEN_HERE>
+    Expected response (200 OK):
+    {
+    "user": {
+    "\_id": "65f1234567890abcdef...",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "instructor",
+    "createdAt": "2025-12-12T10:30:00.000Z"
+    }
+    }
