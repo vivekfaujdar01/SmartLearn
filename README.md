@@ -70,3 +70,22 @@ Following are the routes i have implemented so far:
     "createdAt": "2025-12-12T10:30:00.000Z"
     }
     }
+  - PUT api/users/me - Update current user profile // Protected route
+    Headers:
+    Authorization: Bearer <PASTE_TOKEN_HERE>
+    Body → raw → JSON
+    {
+    "name": "John Updated",
+    "email": "newemail@example.com"
+    }
+    Expected response (200 OK):
+    {
+    "message": "Profile updated successfully",
+    "user": {
+    "\_id": "...",
+    "name": "Updated Name",
+    "email": "newemail@example.com",
+    "role": "instructor",
+    "createdAt": "..."
+    }
+    }
