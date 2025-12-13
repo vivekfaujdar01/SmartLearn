@@ -1,91 +1,79 @@
-Till now in backend i worked on course listing and course details by id. I removed lesson population from course details to optimize performance. I also ensured that only instructors or admins can create, update, or delete courses.
+## Backend Progress
 
-I made auth routes like auth/register and auth/login public for user registration and login.
+### Overview
+I've implemented course listing, course details retrieval, and role-based access control. I optimized course details by removing lesson population and ensured only instructors/admins can manage courses.
 
-Following are the routes i have implemented so far:
+Auth routes (`auth/register`, `auth/login`) are public for user registration and login.
 
-- Public routes:
+---
 
-  - GET api/courses - List all courses with pagination // Public route (http://localhost:8000/api/courses
-    )
-  - GET api/courses/:id - Get course details by ID // Public route (http://localhost:8000/api/courses/<COURSE_ID>
-    )
+### API Routes
 
-- Protected routes (require authentication and specific roles):
+#### Public Routes
 
-  - POST api/courses - Create a new course // Protected route (instructor/admin only) (http://localhost:8000/api/courses
-    )
-    Authorization → Bearer Token (paste token)
-    Body → raw → JSON
-    {
-    "title": "Mastering Node.js",
-    "shortDescription": "Complete beginner to advanced course",
-    "description": "Full course content...",
-    "price": 499,
-    "category": "backend",
-    "thumbnailUrl": "https://example.com/node.jpg"
-    }
-    Expected response:
-    {
-    "course": {
-    "\_id": "65f1...",
-    "title": "Mastering Node.js",
-    ...
-    }
-    }
+**GET `/api/courses`**
+- List all courses with pagination
+- URL: `http://localhost:8000/api/courses`
 
-  - PUT api/courses/:id - Update an existing course // Protected route (instructor/admin only) (http://localhost:8000/api/courses/<COURSE_ID>
-    )
-    Body → JSON:
-    {
-    "title": "Updated Node.js Course Title",
-    "price": 599
-    }
-    Expected response:
-    {
-    "course": {
-    "\_id": "65f1...",
-    "title": "Updated Node.js Course Title",
-    ...
-    }
-    }
-  - DELETE api/courses/:id - Delete a course // Protected route (instructor/admin only) (http://localhost:8000/api/courses/<COURSE_ID>
-    )
-    Expected:
-    { "message": "Course removed" }
+**GET `/api/courses/:id`**
+- Get course details by ID
+- URL: `http://localhost:8000/api/courses/<COURSE_ID>`
 
-- Auth routes:
-  - POST api/auth/register - User registration // Public route
-  - POST api/auth/login - User login // Public route
-  - GET api/users/me - Get current user profile // Protected route
-    Headers:
-    Authorization: Bearer <PASTE_TOKEN_HERE>
-    Expected response (200 OK):
-    {
-    "user": {
-    "\_id": "65f1234567890abcdef...",
-    "name": "John Doe",
-    "email": "john@example.com",
-    "role": "instructor",
-    "createdAt": "2025-12-12T10:30:00.000Z"
-    }
-    }
-  - PUT api/users/me - Update current user profile // Protected route
-    Headers:
-    Authorization: Bearer <PASTE_TOKEN_HERE>
-    Body → raw → JSON
-    {
-    "name": "John Updated",
-    "email": "newemail@example.com"
-    }
-    Expected response (200 OK):
-    {
-    "message": "Profile updated successfully",
-    "user": {
-    "\_id": "...",
-    "name": "Updated Name",
-    "email": "newemail@example.com",
-    "role": "instructor",
-    "createdAt": "..."
-    }
-    }
+---
+
+#### Protected Routes (Authentication + Role Required)
+
+**POST `/api/courses`** (Instructor/Admin only)
+- Create a new course
+- URL: `http://localhost:8000/api/courses`
+- Header: `Authorization: Bearer <TOKEN>`
+- Body:
+```json
+{
+  "title": "Mastering Node.js",
+  "shortDescription": "Complete beginner to advanced course",
+  "description": "Full course content...",
+  "price": 499,
+  "category": "backend",
+  "thumbnailUrl": "https://example.com/node.jpg"
+}
+```
+- Response: `{ "course": { "_id": "65f1...", "title": "Mastering Node.js", ... } }`
+
+**PUT `/api/courses/:id`** (Instructor/Admin only)
+- Update an existing course
+- Header: `Authorization: Bearer <TOKEN>`
+- Body: `{ "title": "Updated Title", "price": 599 }`
+- Response: `{ "course": { "_id": "...", "title": "Updated Title", ... } }`
+
+**DELETE `/api/courses/:id`** (Instructor/Admin only)
+- Delete a course
+- Header: `Authorization: Bearer <TOKEN>`
+- Response: `{ "message": "Course removed" }`
+
+---
+
+#### Auth Routes
+
+**POST `/api/auth/register`** (Public)
+- User registration
+
+**POST `/api/auth/login`** (Public)
+- User login
+
+**GET `/api/users/me`** (Protected)
+- Get current user profile
+- Header: `Authorization: Bearer <TOKEN>`
+- Response: `{ "user": { "_id": "...", "name": "John Doe", "email": "john@example.com", "role": "instructor", "createdAt": "..." } }`
+
+**PUT `/api/users/me`** (Protected)
+- Update user profile
+- Header: `Authorization: Bearer <TOKEN>`
+- Body: `{ "name": "John Updated", "email": "newemail@example.com" }`
+
+**PUT `/api/users/change-password`** (Protected)
+- Change password
+- Header: `Authorization: Bearer <TOKEN>`
+- Body: `{ "oldPassword": "...", "newPassword": "...", "confirmPassword": "..." }`
+- Errors: Invalid fields (400), weak password (400), mismatch (400), incorrect old password (401), user not found (404)
+
