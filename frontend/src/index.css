@@ -2,3 +2,172 @@
 
 
 
+:root {
+  --background: hsl(210, 20%, 98%);
+  --foreground: hsl(222, 47%, 11%);
+
+  --card: #ffffff;
+  --card-foreground: hsl(222, 47%, 11%);
+
+  --popover: #ffffff;
+  --popover-foreground: hsl(222, 47%, 11%);
+
+  --primary: hsl(45, 86%, 49%);
+  --primary-foreground: #ffffff;
+  --primary-glow: hsl(172, 66%, 50%);
+
+  --secondary: hsl(210, 20%, 96%);
+  --secondary-foreground: hsl(222, 47%, 11%);
+
+  --muted: hsl(210, 20%, 94%);
+  --muted-foreground: hsl(215, 16%, 47%);
+
+  --accent: hsl(32, 95%, 55%);
+  --accent-foreground: #ffffff;
+
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: #ffffff;
+
+  --border: hsl(214, 32%, 91%);
+  --input: hsl(214, 32%, 91%);
+  --ring: hsl(172, 66%, 40%);
+
+  --radius: 0.75rem;
+
+  /* Gradients & Shadows */
+  --gradient-primary: linear-gradient(135deg, hsl(172, 66%, 40%), hsl(172, 66%, 50%));
+  --gradient-hero: linear-gradient(135deg, hsl(32, 96%, 55%), hsl(198, 75%, 52%));
+  --gradient-card: linear-gradient(180deg, #ffffff, hsl(210, 20%, 99%));
+
+  --shadow-card: 0 4px 20px -4px rgba(17, 24, 39, 0.08);
+  --shadow-card-hover: 0 12px 32px -8px rgba(20, 184, 166, 0.2);
+  --shadow-glow: 0 0 30px rgba(20, 184, 166, 0.3);
+
+  /* Fonts */
+  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+/* ===============================
+   DARK MODE
+================================ */
+.dark {
+  --background: hsl(222, 47%, 6%);
+  --foreground: hsl(210, 40%, 98%);
+
+  --card: hsl(222, 47%, 8%);
+  --card-foreground: hsl(210, 40%, 98%);
+
+  --popover: hsl(222, 47%, 8%);
+  --popover-foreground: hsl(210, 40%, 98%);
+
+  --primary: hsl(172, 66%, 50%);
+  --primary-foreground: hsl(222, 47%, 11%);
+
+  --secondary: hsl(217, 33%, 17%);
+  --secondary-foreground: hsl(210, 40%, 98%);
+
+  --muted: hsl(217, 33%, 17%);
+  --muted-foreground: hsl(215, 20%, 65%);
+
+  --border: hsl(217, 33%, 17%);
+  --input: hsl(217, 33%, 17%);
+  --ring: hsl(172, 66%, 50%);
+}
+
+
+* {
+  box-sizing: border-box;
+  border-color: var(--border);
+}
+
+body {
+  margin: 0;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  margin: 0;
+}
+
+/* ===============================
+   UTILITY CLASSES
+================================ */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+.gradient-primary {
+  background: var(--gradient-primary);
+}
+
+.gradient-hero {
+  background: var(--gradient-hero);
+}
+
+.shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
+.shadow-card-hover:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* ===============================
+   ANIMATIONS
+================================ */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--muted) 0%,
+    var(--background) 50%,
+    var(--muted) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+
