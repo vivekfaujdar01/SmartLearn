@@ -13,7 +13,7 @@ const signToken = (user) => {
 // ================= REGISTER =================
 export const register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, adminSecret } = req.body;
 
     // Validation
     if (!name || !email || !password) {
@@ -27,8 +27,18 @@ export const register = async (req, res) => {
     }
 
     // Prevent role abuse
-    const allowedRoles = ["student", "instructor"];
-    const userRole = allowedRoles.includes(role) ? role : "student";
+    // Role assignment with Admin Secret check
+    const requestedRole = (role || "").toLowerCase();
+    let userRole = "student";
+
+    if (requestedRole === "admin") {
+      // Only allow admin if secret matches and is set
+      if (process.env.ADMIN_SECRET && adminSecret === process.env.ADMIN_SECRET) {
+        userRole = "admin";
+      }
+    } else if (["student", "instructor"].includes(requestedRole)) {
+      userRole = requestedRole;
+    }
 
     // Create user (password hashed by model)
     const user = await User.create({
@@ -59,7 +69,7 @@ export const register = async (req, res) => {
 // ================= LOGIN =================
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, adminSecret } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password required" });
@@ -69,6 +79,13 @@ export const login = async (req, res) => {
 
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Require Admin Secret for admin login
+    if (user.role === 'admin') {
+      if (!process.env.ADMIN_SECRET || adminSecret !== process.env.ADMIN_SECRET) {
+        return res.status(403).json({ message: "Admin authentication failed: Invalid or missing secret" });
+      }
     }
 
     const token = signToken(user);
