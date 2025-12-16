@@ -5,6 +5,8 @@ import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
+import articleRoutes from './routes/articleRoutes.js';
+import adminArticleRoutes from './routes/adminArticleRoutes.js';
 
 const app = express();
 
@@ -24,6 +26,8 @@ app.use(cors({
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/articles', articleRoutes);
+app.use('/api/admin', adminArticleRoutes);
 
 // test route
 app.get('/', (req, res)=>{
