@@ -20,9 +20,9 @@ export default function Register() {
 
     setIsLoading(true);
     try {
-      // Replace with your actual signup logic
-      // const data = await signupUser(name, email, password);
-      // localStorage.setItem("token", data.token);
+      
+      const data = await signupUser(name, email, password,role);
+      localStorage.setItem("token", data.token);
       alert("Signup successful");
       navigate("/dashboard");
     } catch (err) {

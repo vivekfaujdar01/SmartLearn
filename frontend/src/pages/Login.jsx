@@ -55,7 +55,7 @@ export default function Login() {
               <BookOpen className="w-7 h-7 text-primary-foreground" />
             </div>
             <span className="text-2xl font-display font-bold text-primary-foreground">
-              LearnHub
+              SmartLearn
             </span>
           </div>
           
@@ -161,17 +161,7 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Remember Me */}
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="remember"
-                className="w-4 h-4 rounded border-input text-primary focus:ring-ring"
-              />
-              <label htmlFor="remember" className="text-sm text-muted-foreground">
-                Remember me for 30 days
-              </label>
-            </div>
+            
 
             {/* Submit Button */}
             <button
