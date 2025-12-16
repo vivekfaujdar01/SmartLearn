@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { 
-  BookOpen, 
-  Search, 
-  Clock, 
-  Users, 
+import {
+  BookOpen,
+  Search,
+  Clock,
+  Users,
   Star,
   Filter,
   ChevronLeft,
@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { listCourses } from "../services/courseService";
 
-const categories = ["All", "Development", "Design", "Business", "Marketing", "Photography"];
+const categories = ["All", "backend", "frontend", "design", "business", "marketing"];
 
 export default function Courses() {
   const [courses, setCourses] = useState([]);
@@ -26,6 +26,10 @@ export default function Courses() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
 
+  // ✅ Auth user (standard MERN)
+  const user = JSON.parse(localStorage.getItem("user"));
+  const isInstructor = user?.role === "instructor" || user?.role === "admin";
+
   const fetchCourses = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -34,12 +38,13 @@ export default function Courses() {
         page: currentPage,
         limit: 9,
         search: searchQuery,
-        category: selectedCategory === "All" ? "" : selectedCategory,
+        category: selectedCategory === "All" ? "" : selectedCategory
       });
-      setCourses(data.courses);
-      setMeta(data.meta);
+
+      setCourses(data.courses || []);
+      setMeta(data.meta || {});
     } catch (err) {
-      setError(err.message || "An error occurred");
+      setError(err.message || "Failed to load courses");
     } finally {
       setLoading(false);
     }
@@ -59,303 +64,168 @@ export default function Courses() {
     setCurrentPage(1);
   };
 
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= meta.pages) {
-      setCurrentPage(newPage);
-    }
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= meta.pages) setCurrentPage(page);
   };
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
-                <BookOpen className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-display font-bold text-foreground">
-                SmartLearn
-              </span>
-            </Link>
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
+              <BookOpen className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <span className="text-xl font-display font-bold">SmartLearn</span>
+          </Link>
 
-            <nav className="hidden md:flex items-center gap-8">
-              <Link
-                to="/"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Home
-              </Link>
-              <Link
-                to="/courses"
-                className="text-primary font-medium"
-              >
-                Courses
-              </Link>
-              <Link
-                to="/articles"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Articles
-              </Link>
-              <Link 
-                to="/games" 
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Games
-              </Link>
-            </nav>
+          <nav className="hidden md:flex gap-6">
+            <Link to="/" className="text-muted-foreground hover:text-foreground">Home</Link>
+            <Link to="/courses" className="text-primary font-medium">Courses</Link>
+            <Link to="/articles" className="text-muted-foreground hover:text-foreground">Articles</Link>
+            <Link to="/games" className="text-muted-foreground hover:text-foreground">Games</Link>
+          </nav>
 
-            <div className="flex items-center gap-3">
-              <Link 
-                to="/login" 
-                className="px-4 py-2 gradient-primary text-primary-foreground font-medium rounded-lg hover:opacity-90 transition-opacity"
+          <div className="flex gap-3">
+            {isInstructor && (
+              <Link
+                to="/instructor/add-course"
+                className="px-4 py-2 border border-border rounded-lg text-sm hover:bg-card"
+              >
+                Add Course
+              </Link>
+            )}
+            {!user && (
+              <Link
+                to="/login"
+                className="px-4 py-2 gradient-primary text-primary-foreground rounded-lg"
               >
                 Get Started
               </Link>
-            </div>
+            )}
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="gradient-hero py-16 sm:py-20 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-20 w-72 h-72 bg-primary-foreground rounded-full blur-3xl animate-float" />
-          <div className="absolute bottom-10 right-20 w-96 h-96 bg-accent rounded-full blur-3xl animate-pulse-slow" />
-        </div>
+      {/* Hero */}
+      <section className="gradient-hero py-20 text-center text-primary-foreground">
+        <Sparkles className="mx-auto mb-4" />
+        <h1 className="text-5xl font-display font-bold mb-4">
+          Learn From Expert Instructors
+        </h1>
+        <p className="max-w-xl mx-auto mb-8 opacity-80">
+          Explore professional courses and boost your career.
+        </p>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-foreground/20 text-primary-foreground text-sm font-medium mb-6 backdrop-blur-sm">
-              <Sparkles className="w-4 h-4" />
-              Learn from the best
-            </div>
-
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-extrabold text-primary-foreground mb-6">
-              Explore Courses from
-              <span className="block text-accent">Expert Instructors</span>
-            </h1>
-
-            <p className="text-lg text-primary-foreground/80 mb-8">
-              Discover courses crafted by industry professionals to help you master new skills and advance your career.
-            </p>
-
-            {/* Search Bar */}
-            <div className="max-w-xl mx-auto relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search courses..."
-                value={searchQuery}
-                onChange={handleSearch}
-                className="w-full pl-12 pr-4 py-4 bg-background border border-input rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring shadow-lg"
-              />
-            </div>
-          </div>
+        <div className="max-w-xl mx-auto relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <input
+            value={searchQuery}
+            onChange={handleSearch}
+            placeholder="Search courses..."
+            className="w-full pl-12 py-4 rounded-2xl bg-background text-foreground"
+          />
         </div>
       </section>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Category Filters */}
-        <div className="flex flex-wrap items-center gap-3 mb-10">
-          <Filter className="w-5 h-5 text-muted-foreground" />
-          {categories.map(category => (
+      {/* Content */}
+      <main className="max-w-7xl mx-auto px-4 py-12">
+        {/* Categories */}
+        <div className="flex flex-wrap gap-3 mb-10">
+          <Filter className="text-muted-foreground" />
+          {categories.map(cat => (
             <button
-              key={category}
-              onClick={() => handleCategoryChange(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                selectedCategory === category
-                  ? "gradient-primary text-primary-foreground shadow-lg"
-                  : "bg-card border border-border text-muted-foreground hover:text-foreground hover:border-primary/50"
+              key={cat}
+              onClick={() => handleCategoryChange(cat)}
+              className={`px-4 py-2 rounded-full text-sm ${
+                selectedCategory === cat
+                  ? "gradient-primary text-primary-foreground"
+                  : "border border-border text-muted-foreground hover:text-foreground"
               }`}
             >
-              {category}
+              {cat}
             </button>
           ))}
         </div>
 
-        {/* Error State */}
-        {error && (
-          <div className="text-center p-8 bg-destructive/10 text-destructive border border-destructive/20 rounded-2xl mb-8">
-            <p className="font-semibold text-lg">Failed to load courses</p>
-            <p className="text-sm mt-1 opacity-80">{error}</p>
-          </div>
-        )}
-
-        {/* Loading State */}
-        {loading && (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-card border border-border rounded-2xl overflow-hidden animate-pulse">
-                <div className="h-48 bg-muted" />
-                <div className="p-5 space-y-3">
-                  <div className="h-4 bg-muted rounded w-1/4" />
-                  <div className="h-6 bg-muted rounded w-3/4" />
-                  <div className="h-4 bg-muted rounded w-full" />
-                  <div className="h-4 bg-muted rounded w-2/3" />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!loading && !error && courses.length === 0 && (
-          <div className="text-center py-16">
-            <GraduationCap className="w-16 h-16 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-xl font-display font-semibold text-foreground mb-2">No courses found</h3>
-            <p className="text-muted-foreground">Try adjusting your search or filter to find what you're looking for.</p>
-          </div>
-        )}
+        {/* States */}
+        {error && <p className="text-center text-destructive">{error}</p>}
+        {loading && <p className="text-center">Loading courses...</p>}
 
         {/* Course Grid */}
-        {!loading && !error && courses.length > 0 && (
-          <>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-display font-bold text-foreground">
-                {selectedCategory === "All" ? "All Courses" : selectedCategory}
-              </h2>
-              <span className="text-sm text-muted-foreground">
-                {meta.total || courses.length} courses
-              </span>
-            </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {courses
+            .filter(c => isInstructor || c.published)
+            .map(course => (
+              <article
+                key={course._id}
+                className="bg-card border border-border rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition"
+              >
+                <div className="h-48 gradient-hero relative">
+                  {course.thumbnailUrl ? (
+                    <img
+                      src={course.thumbnailUrl}
+                      alt={course.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <GraduationCap className="w-16 h-16 text-primary-foreground/40 mx-auto mt-16" />
+                  )}
+                  <span className="absolute top-4 right-4 bg-accent px-3 py-1 rounded-full text-sm">
+                    ₹{course.price}
+                  </span>
+                </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.map((course, index) => (
-                <article 
-                  key={course._id}
-                  className="group bg-card border border-border rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  {/* Thumbnail */}
-                  <div className="h-48 gradient-hero relative overflow-hidden">
-                    {course.thumbnail ? (
-                      <img 
-                        src={course.thumbnail} 
-                        alt={course.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <GraduationCap className="w-16 h-16 text-primary-foreground/30" />
-                      </div>
-                    )}
-                    
-                    {/* Play Button Overlay */}
-                    <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors duration-300 flex items-center justify-center">
-                      <div className="w-14 h-14 rounded-full bg-primary/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300">
-                        <Play className="w-6 h-6 text-primary-foreground ml-1" />
-                      </div>
-                    </div>
+                <div className="p-5">
+                  <h3 className="font-display font-bold mb-2">{course.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {course.shortDescription || "No description"}
+                  </p>
 
-                    {/* Price Badge */}
-                    <div className="absolute top-4 right-4">
-                      <span className="px-3 py-1 bg-accent text-accent-foreground text-sm font-bold rounded-full shadow-lg">
-                        ${course.price}
-                      </span>
-                    </div>
-
-                    {/* Category Badge */}
-                    <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1 bg-background/90 backdrop-blur-sm text-foreground text-xs font-medium rounded-full">
-                        {course.category}
-                      </span>
-                    </div>
+                  <div className="flex justify-between text-sm text-muted-foreground mb-4">
+                    <span><Star className="inline w-4 h-4 text-accent" /> 4.5</span>
+                    <span><Clock className="inline w-4 h-4" /> 10h</span>
                   </div>
 
-                  {/* Content */}
-                  <div className="p-5">
-                    <h3 className="text-lg font-display font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                      {course.title}
-                    </h3>
-                    
-                    <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                      {course.description}
-                    </p>
-
-                    {/* Stats */}
-                    <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Star className="w-4 h-4 text-accent fill-accent" />
-                        {course.rating?.toFixed(1) || "4.5"}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Users className="w-4 h-4" />
-                        {course.enrollments || 0}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        {course.duration || "10h"}
-                      </span>
-                    </div>
-
-                    {/* Instructor */}
-                    <div className="flex items-center justify-between pt-4 border-t border-border">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-primary-foreground text-xs font-bold">
-                          {course.instructor?.name?.split(' ').map(n => n[0]).join('') || 'IN'}
-                        </div>
-                        <span className="text-sm text-foreground">
-                          {course.instructor?.name || 'Instructor'}
-                        </span>
-                      </div>
-                      <button className="text-primary text-sm font-medium hover:underline">
-                        View Course
-                      </button>
-                    </div>
+                  <div className="flex justify-between items-center border-t pt-4">
+                    <span className="text-sm">{course.instructor?.name}</span>
+                    <Link
+                      to={`/courses/${course._id}`}
+                      className="text-primary text-sm hover:underline"
+                    >
+                      View Course
+                    </Link>
                   </div>
-                </article>
-              ))}
-            </div>
+                </div>
+              </article>
+            ))}
+        </div>
 
-            {/* Pagination */}
-            {meta.pages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-12">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="p-2 rounded-lg border border-border text-foreground hover:bg-card disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                
-                {[...Array(meta.pages)].map((_, i) => (
-                  <button
-                    key={i + 1}
-                    onClick={() => handlePageChange(i + 1)}
-                    className={`w-10 h-10 rounded-lg font-medium transition-all duration-200 ${
-                      currentPage === i + 1
-                        ? "gradient-primary text-primary-foreground shadow-lg"
-                        : "border border-border text-foreground hover:bg-card"
-                    }`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-                
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === meta.pages}
-                  className="p-2 rounded-lg border border-border text-foreground hover:bg-card disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </div>
-            )}
-          </>
+        {/* Pagination */}
+        {meta.pages > 1 && (
+          <div className="flex justify-center gap-2 mt-12">
+            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+              <ChevronLeft />
+            </button>
+            {[...Array(meta.pages)].map((_, i) => (
+              <button
+                key={i}
+                onClick={() => handlePageChange(i + 1)}
+                className={currentPage === i + 1 ? "font-bold" : ""}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === meta.pages}>
+              <ChevronRight />
+            </button>
+          </div>
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-card border-t border-border py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-muted-foreground text-sm">
-            © 2024 SmartLearn. All rights reserved.
-          </p>
-        </div>
+      <footer className="border-t border-border py-6 text-center text-sm text-muted-foreground">
+        © 2024 SmartLearn. All rights reserved.
       </footer>
     </div>
   );
