@@ -135,19 +135,37 @@ export default function Articles() {
                 <BookOpen className="w-5 h-5 text-primary-foreground" />
               </div>
               <span className="text-xl font-display font-bold text-foreground">
-                LearnHub
+                SmartLearn
               </span>
             </Link>
             
-            <nav className="hidden md:flex items-center gap-6">
-              <Link to="/articles" className="text-primary font-medium">Articles</Link>
-              <Link to="/courses" className="text-muted-foreground hover:text-foreground transition-colors">Courses</Link>
-              <Link to="/community" className="text-muted-foreground hover:text-foreground transition-colors">Community</Link>
+             <nav className="hidden md:flex items-center gap-8">
+              <Link
+                to="/"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Home
+              </Link>
+              <Link
+                to="/courses"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Courses
+              </Link>
+              <Link
+                to="/articles"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Articles
+              </Link>
+              <Link to="/games" className="text-primary font-medium">
+                Games
+              </Link>
             </nav>
 
             <div className="flex items-center gap-3">
               <Link 
-                to="/signup" 
+                to="/login" 
                 className="px-4 py-2 gradient-primary text-primary-foreground font-medium rounded-lg hover:opacity-90 transition-opacity"
               >
                 Get Started

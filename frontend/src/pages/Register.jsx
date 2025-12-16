@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { BookOpen, Mail, Lock, User, ArrowRight, Sparkles, Shield } from "lucide-react";
+import { BookOpen, Mail, Lock, User, ArrowRight, Sparkles, Shield,ChevronDown } from "lucide-react";
 
 export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+ const [role, setRole] = useState("student");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -62,7 +62,7 @@ export default function Register() {
               <BookOpen className="w-7 h-7 text-primary-foreground" />
             </div>
             <span className="text-2xl font-display font-bold text-primary-foreground">
-              LearnHub
+              SmartLearn
             </span>
           </div>
           
@@ -109,7 +109,7 @@ export default function Register() {
               <BookOpen className="w-6 h-6 text-primary-foreground" />
             </div>
             <span className="text-2xl font-display font-bold text-foreground">
-              LearnHub
+              SmartLearn
             </span>
           </div>
 
@@ -189,23 +189,31 @@ export default function Register() {
               </div>
             </div>
 
-            {/* Confirm Password Field */}
+            
             <div className="space-y-2">
               <label className="block text-sm font-medium text-foreground">
-                Confirm Password
+                Register As
               </label>
               <div className="relative group">
+                
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Shield className="w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  
+                  <User className="w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                 </div>
-                <input
-                  type="password"
-                  placeholder="Confirm your password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                <select
+                  value={role} 
+                  onChange={(e) => setRole(e.target.value)} 
                   required
-                  className="w-full pl-12 pr-4 py-3.5 bg-card border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200 shadow-card hover:shadow-card-hover"
-                />
+                  
+                  className="w-full pl-12 pr-4 py-3.5 bg-card border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200 shadow-card hover:shadow-card-hover appearance-none cursor-pointer"
+                >
+                  <option value="student">Student</option>
+                  <option value="instructor">Instructor</option>
+                </select>
+                {/* Custom chevron icon for visual appeal in select box */}
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                  <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                </div>
               </div>
             </div>
 

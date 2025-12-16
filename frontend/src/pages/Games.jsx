@@ -609,7 +609,7 @@ export default function Games() {
                 <BookOpen className="w-5 h-5 text-primary-foreground" />
               </div>
               <span className="text-xl font-display font-bold text-foreground">
-                LearnHub
+                SmartLearn
               </span>
             </Link>
 
@@ -619,6 +619,12 @@ export default function Games() {
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 Home
+              </Link>
+              <Link
+                to="/courses"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Courses
               </Link>
               <Link
                 to="/articles"
@@ -632,7 +638,7 @@ export default function Games() {
             </nav>
 
             <Link
-              to="/signup"
+              to="/login"
               className="px-5 py-2.5 gradient-primary text-primary-foreground font-medium rounded-xl hover:opacity-90 transition-opacity"
             >
               Get Started
