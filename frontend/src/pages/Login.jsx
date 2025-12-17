@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { loginUser } from "../services/auth";
 import { BookOpen, Mail, Lock, ArrowRight, Sparkles, Shield } from "lucide-react";
 
 export default function Login() {
@@ -21,25 +22,13 @@ export default function Login() {
         body.adminSecret = adminSecret;
       }
 
-      const res = await fetch("http://localhost:8000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Login failed");
-      }
+      const data = await loginUser(email, password, body.adminSecret);
 
       // ✅ Save auth info
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      navigate("/dashboard");
+      navigate("/");
     } catch (err) {
       alert(err.message);
     } finally {

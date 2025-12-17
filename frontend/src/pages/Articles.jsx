@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { fetchArticles } from "../services/articleService";
 import { Link } from "react-router-dom";
 import { 
   BookOpen, 
@@ -35,21 +36,7 @@ export default function Articles() {
       setError("");
 
       try {
-        const url = isAdmin
-          ? "http://localhost:8000/api/admin/articles"
-          : "http://localhost:8000/api/articles";
-
-        const res = await fetch(url, {
-          headers: isAdmin
-            ? { Authorization: `Bearer ${token}` }
-            : {}
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.message || "Failed to fetch articles");
-        }
+        const data = await fetchArticles(token, isAdmin);
 
         // 🔁 Map backend → frontend shape (NO UI CHANGE)
         const mapped = data.map(a => ({

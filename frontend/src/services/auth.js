@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8000/api/auth";
+const BASE_URL = import.meta.env.VITE_API_URL + "/auth";
 
 // REGISTER
 export const registerUser = async (formData) => {

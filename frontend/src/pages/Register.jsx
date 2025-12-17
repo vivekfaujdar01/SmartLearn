@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { registerUser } from "../services/auth";
 import {
   BookOpen,
   Mail,
@@ -45,19 +46,7 @@ export default function Register() {
         body.adminSecret = adminSecret;
       }
 
-      const res = await fetch("http://localhost:8000/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Registration failed");
-      }
+      const data = await registerUser(body);
 
       // ✅ Save auth data
       localStorage.setItem("token", data.token);
