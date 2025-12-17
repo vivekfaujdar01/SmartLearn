@@ -8,7 +8,7 @@ import {
   User, 
   Clock, 
   Heart, 
-  Share2, 
+ 
   Edit, 
   Trash2,
   BookOpen
@@ -105,7 +105,7 @@ export default function ArticleDetails() {
              <BookOpen className="w-20 h-20 text-primary-foreground/20" />
            </div>
          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-background to-transparent" />
       </div>
 
       <div className="max-w-4xl mx-auto px-6 mt-8 relative z-10">
@@ -137,9 +137,7 @@ export default function ArticleDetails() {
                   <span className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" /> {new Date(article.createdAt).toLocaleDateString()}
                   </span>
-                  <span className="flex items-center gap-1">
-                    <BookOpen className="w-4 h-4" /> {Math.ceil(article.content.length / 1000)} min read
-                  </span>
+
                 </div>
               </div>
             </div>
@@ -157,9 +155,7 @@ export default function ArticleDetails() {
                 <span className="font-medium">{article.likes?.length || 0}</span>
               </button>
               
-              <button className="p-3 border border-border rounded-xl hover:bg-secondary transition">
-                <Share2 className="w-5 h-5" />
-              </button>
+
 
               {canEdit && (
                 <>
@@ -180,11 +176,10 @@ export default function ArticleDetails() {
             </div>
           </div>
 
-          <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground">
-            {article.content.split('\n').map((paragraph, idx) => (
-              paragraph ? <p key={idx} className="mb-4">{paragraph}</p> : <br key={idx} />
-            ))}
-          </div>
+          <div 
+            className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground w-full break-words overflow-hidden"
+            dangerouslySetInnerHTML={{ __html: article.content }}
+          />
 
         </div>
       </div>

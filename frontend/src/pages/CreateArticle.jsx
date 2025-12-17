@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { createArticle } from "../services/articleService";
 import { toast } from "sonner";
 import { ArrowLeft, Save, Image as ImageIcon, Tag, Layout } from "lucide-react";
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 const categories = ["Development", "Design", "Backend", "AI/ML", "Trends"];
 
@@ -20,6 +22,10 @@ export default function CreateArticle() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleContentChange = (content) => {
+    setFormData(prev => ({...prev, content}));
   };
 
   const handleSubmit = async (e) => {
@@ -118,15 +124,14 @@ export default function CreateArticle() {
           {/* Content */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Content</label>
-            <textarea
-              name="content"
-              value={formData.content}
-              onChange={handleChange}
-              rows={15}
-              placeholder="Write your article content here..."
-              className="w-full p-3 border rounded-xl bg-card resize-y min-h-[300px]"
-              required
-            />
+            <div className="bg-card rounded-xl overflow-hidden [&_.ql-toolbar]:border-gray-200 [&_.ql-container]:border-gray-200 [&_.ql-editor]:min-h-[300px] [&_.ql-editor]:text-base">
+              <ReactQuill 
+                theme="snow"
+                value={formData.content}
+                onChange={handleContentChange}
+                className="h-full bg-white text-black"
+              />
+            </div>
           </div>
 
           <button
