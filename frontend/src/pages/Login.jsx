@@ -1,36 +1,42 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { loginUser } from "../services/auth";
+import { toast } from "sonner";
 import { BookOpen, Mail, Lock, ArrowRight, Sparkles, Shield } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [adminSecret, setAdminSecret] = useState("");
+  const [isAdminLogin, setIsAdminLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth(); // Global auth context login
+
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const body = { email, password };
+      // If admin checkbox is checked, pass the secret
+      const payload = isAdminLogin ? { ...formData, role: 'admin', adminSecret } : formData;
+      const data = await loginUser(payload.email, payload.password, payload.adminSecret);
 
-      // ✅ Admin login requires secret
-      if (email.toLowerCase().includes("admin")) {
-        body.adminSecret = adminSecret;
+      // Update global context
+      login(data.user, data.token);
+
+      if (data.user.role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (data.user.role === "instructor") {
+        navigate("/instructor/dashboard");
+      } else {
+        navigate("/");
       }
-
-      const data = await loginUser(email, password, body.adminSecret);
-
-      // ✅ Save auth info
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      navigate("/");
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message || "Login failed");
     } finally {
       setIsLoading(false);
     }
@@ -38,7 +44,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* LEFT SIDE (unchanged UI) */}
+      {/* LEFT SIDE */}
       <div className="hidden lg:flex lg:w-1/2 gradient-hero relative overflow-hidden">
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-20">
           <div className="flex items-center gap-3 mb-8">
@@ -82,9 +88,10 @@ export default function Login() {
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <input
                 type="email"
+                name="email"
                 placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formData.email}
+                onChange={handleChange}
                 required
                 className="w-full pl-12 py-3.5 bg-card border border-input rounded-xl"
               />
@@ -95,17 +102,32 @@ export default function Login() {
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <input
                 type="password"
+                name="password"
                 placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formData.password}
+                onChange={handleChange}
                 required
                 className="w-full pl-12 py-3.5 bg-card border border-input rounded-xl"
               />
             </div>
 
-            {/* Admin Secret (ONLY IF ADMIN EMAIL) */}
-            {email.toLowerCase().includes("admin") && (
-              <div className="relative">
+            {/* Admin Toggle */}
+            <div className="flex items-center gap-2">
+              <input 
+                type="checkbox" 
+                id="adminLogin" 
+                checked={isAdminLogin} 
+                onChange={(e) => setIsAdminLogin(e.target.checked)}
+                className="rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <label htmlFor="adminLogin" className="text-sm cursor-pointer select-none">
+                Login as Administrator
+              </label>
+            </div>
+
+            {/* Admin Secret */}
+            {isAdminLogin && (
+              <div className="relative animate-in fade-in slide-in-from-top-2">
                 <Shield className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
                   type="password"

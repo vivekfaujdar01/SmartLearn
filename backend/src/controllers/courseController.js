@@ -89,14 +89,26 @@ export const updateCourse = asyncHandler(async (req, res) => {
  */
 export const deleteCourse = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid course id' });
 
-  // find and delete in one atomic operation
-  const deleted = await Course.findByIdAndDelete(id);
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid course id' });
+  }
 
-  if (!deleted) return res.status(404).json({ message: 'Course not found' });
+  // Find course first to check ownership
+  const course = await Course.findById(id);
 
-  return res.json({ message: 'Course removed' });
+  if (!course) {
+    return res.status(404).json({ message: 'Course not found' });
+  }
+
+  // Check permissions: Admin or Owner only
+  if (req.user.role !== 'admin' && course.instructor.toString() !== req.user._id.toString()) {
+    return res.status(403).json({ message: 'Forbidden: You do not have permission to delete this course' });
+  }
+
+  await course.deleteOne();
+
+  return res.json({ message: 'Course removed successfully' });
 });
 
 /**

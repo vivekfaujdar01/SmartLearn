@@ -7,12 +7,14 @@ import userRoutes from './routes/userRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
 import articleRoutes from './routes/articleRoutes.js';
 import adminArticleRoutes from './routes/adminArticleRoutes.js';
+import lessonRoutes from './routes/lessonRoutes.js';
+
 
 const app = express();
 
 // basic express middlewares for parsing json and urlencoded data
-app.use(express.json({limit: '16kb'}));
-app.use(express.urlencoded({extended: true, limit: '16kb'}));
+app.use(express.json({ limit: '16kb' }));
+app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 
 //enable CORS
 app.use(cors({
@@ -28,9 +30,10 @@ app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/articles', articleRoutes);
 app.use('/api/admin', adminArticleRoutes);
+app.use('/api/lessons', lessonRoutes);
 
 // test route
-app.get('/', (req, res)=>{
+app.get('/', (req, res) => {
     res.send('Root Endpoint is working fine');
 });
 

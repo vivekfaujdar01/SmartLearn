@@ -11,11 +11,15 @@ import {
   ChevronRight,
   Play,
   GraduationCap,
-  Sparkles
+  Sparkles,
+  Trash2
 } from "lucide-react";
-import { listCourses } from "../services/courseService";
+import { listCourses, deleteCourse } from "../services/courseService";
+import { toast } from "sonner";
 
-const categories = ["All", "backend", "frontend", "design", "business", "marketing"];
+const categories = ["All", "Development", "Design", "Business", "Marketing", "AI/ML"];
+
+import { useAuth } from "../context/AuthContext";
 
 export default function Courses() {
   const [courses, setCourses] = useState([]);
@@ -26,9 +30,21 @@ export default function Courses() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // ✅ Auth user (standard MERN)
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user } = useAuth();
   const isInstructor = user?.role === "instructor" || user?.role === "admin";
+
+  const handleDelete = async (courseId) => {
+    if (!window.confirm("Are you sure you want to delete this course? This action cannot be undone.")) return;
+
+    try {
+      await deleteCourse(courseId);
+      toast.success("Course deleted successfully");
+      // Refresh list
+      fetchCourses();
+    } catch (err) {
+      toast.error(err.message || "Failed to delete course");
+    }
+  };
 
   const fetchCourses = useCallback(async () => {
     setLoading(true);
@@ -71,42 +87,7 @@ export default function Courses() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-display font-bold">SmartLearn</span>
-          </Link>
 
-          <nav className="hidden md:flex gap-6">
-            <Link to="/" className="text-muted-foreground hover:text-foreground">Home</Link>
-            <Link to="/courses" className="text-primary font-medium">Courses</Link>
-            <Link to="/articles" className="text-muted-foreground hover:text-foreground">Articles</Link>
-            <Link to="/games" className="text-muted-foreground hover:text-foreground">Games</Link>
-          </nav>
-
-          <div className="flex gap-3">
-            {isInstructor && (
-              <Link
-                to="/instructor/add-course"
-                className="px-4 py-2 border border-border rounded-lg text-sm hover:bg-card"
-              >
-                Add Course
-              </Link>
-            )}
-            {!user && (
-              <Link
-                to="/login"
-                className="px-4 py-2 gradient-primary text-primary-foreground rounded-lg"
-              >
-                Get Started
-              </Link>
-            )}
-          </div>
-        </div>
-      </header>
 
       {/* Hero */}
       <section className="gradient-hero py-20 text-center text-primary-foreground">
@@ -190,12 +171,23 @@ export default function Courses() {
 
                   <div className="flex justify-between items-center border-t pt-4">
                     <span className="text-sm">{course.instructor?.name}</span>
-                    <Link
-                      to={`/courses/${course._id}`}
-                      className="text-primary text-sm hover:underline"
-                    >
-                      View Course
-                    </Link>
+                    <div className="flex items-center gap-3">
+                      {(user?.role === "admin" || (user?.role === "instructor" && user?._id === course.instructor?._id)) && (
+                         <button 
+                           onClick={() => handleDelete(course._id)}
+                           className="text-destructive hover:bg-destructive/10 p-2 rounded-full transition-colors"
+                           title="Delete Course"
+                         >
+                           <Trash2 className="w-4 h-4" />
+                         </button>
+                      )}
+                      <Link
+                        to={`/courses/${course._id}`}
+                        className="text-primary text-sm hover:underline"
+                      >
+                        View Course
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </article>

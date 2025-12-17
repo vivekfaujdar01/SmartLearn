@@ -17,7 +17,13 @@ import {
   Shield,
   Globe,
   Menu,
-  X
+  X,
+  Twitter,
+  Github,
+  Linkedin,
+  Instagram,
+  Mail,
+  Send
 } from "lucide-react";
 
 const featuredCourses = [
@@ -110,75 +116,18 @@ const testimonials = [
   }
 ];
 
+// Imports updated to include useAuth
+import { useAuth } from "../context/AuthContext";
+
+// ... Inside LandingPage component
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user } = useAuth(); // Get user from context
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
-                <BookOpen className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-display font-bold text-foreground">
-                SmartLearn
-              </span>
-            </Link>
 
-            <nav className="hidden md:flex items-center gap-8">
-              <Link to="/" className="text-primary font-medium">
-                Home
-              </Link>
-              <Link to="/courses" className="text-muted-foreground hover:text-foreground transition-colors">
-                Courses
-              </Link>
-              <Link to="/articles" className="text-muted-foreground hover:text-foreground transition-colors">
-                Articles
-              </Link>
-              <Link to="/games" className="text-muted-foreground hover:text-foreground transition-colors">
-                Games
-              </Link>
-            </nav>
-
-            <div className="hidden md:flex items-center gap-3">
-              <Link 
-                to="/login" 
-                className="px-4 py-2 gradient-primary text-primary-foreground font-medium rounded-lg hover:opacity-90 transition-opacity"
-              >
-                Get Started
-              </Link>
-            </div>
-
-            {/* Mobile menu button */}
-            <button 
-              className="md:hidden p-2 text-foreground"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-
-          {/* Mobile menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden py-4 border-t border-border">
-              <nav className="flex flex-col gap-4">
-                <Link to="/" className="text-primary font-medium">Home</Link>
-                <Link to="/courses" className="text-muted-foreground hover:text-foreground transition-colors">Courses</Link>
-                <Link to="/articles" className="text-muted-foreground hover:text-foreground transition-colors">Articles</Link>
-                <Link to="/games" className="text-muted-foreground hover:text-foreground transition-colors">Games</Link>
-                <div className="flex gap-3 pt-4 border-t border-border">
-                  <Link to="/login" className="flex-1 px-4 py-2 text-center gradient-primary text-primary-foreground font-medium rounded-lg">
-                    Get Started
-                  </Link>
-                </div>
-              </nav>
-            </div>
-          )}
-        </div>
-      </header>
 
       {/* Hero Section */}
       <section className="gradient-hero py-20 sm:py-28 relative overflow-hidden">
@@ -212,23 +161,16 @@ export default function LandingPage() {
                 Explore Courses
                 <ArrowRight className="w-5 h-5" />
               </Link>
-              <button className="w-full sm:w-auto px-8 py-4 bg-primary-foreground/20 text-primary-foreground font-semibold rounded-xl hover:bg-primary-foreground/30 transition-all duration-200 flex items-center justify-center gap-2 backdrop-blur-sm">
-                <Play className="w-5 h-5" />
-                Watch Demo
-              </button>
+              {/* Watch Demo Removed */}
             </div>
 
             {/* Search Bar */}
-            <div className="max-w-2xl mx-auto relative">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="What do you want to learn today?"
-                className="w-full pl-14 pr-32 py-5 bg-background border border-input rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring shadow-xl text-lg"
-              />
-              <button className="absolute right-3 top-1/2 -translate-y-1/2 px-6 py-3 gradient-primary text-primary-foreground font-medium rounded-xl hover:opacity-90 transition-opacity">
-                Search
-              </button>
+            {/* Trusted By / Popular Tags */}
+            <div className="flex flex-col items-center animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+              <p className="text-primary-foreground/60 text-sm font-medium mb-6 uppercase tracking-wider">
+                Trusted by learners
+              </p>
+
             </div>
           </div>
         </div>
@@ -402,7 +344,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA Section - Hide if logged in */}
+      {!user && (
       <section className="py-20 sm:py-28 gradient-hero relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 right-20 w-72 h-72 bg-primary-foreground rounded-full blur-3xl animate-float" />
@@ -448,13 +391,17 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Footer */}
-      <footer className="bg-card border-t border-border py-12">
+      {/* Footer */}
+      <footer className="bg-card border-t border-border pt-16 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-            <div>
-              <Link to="/" className="flex items-center gap-3 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-16">
+            
+            {/* Brand Column */}
+            <div className="lg:col-span-6">
+              <Link to="/" className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
                   <BookOpen className="w-5 h-5 text-primary-foreground" />
                 </div>
@@ -462,39 +409,62 @@ export default function LandingPage() {
                   SmartLearn
                 </span>
               </Link>
-              <p className="text-muted-foreground text-sm">
-                Empowering learners worldwide with quality education and expert guidance.
+              <p className="text-muted-foreground mb-6 leading-relaxed max-w-sm">
+                Empowering learners worldwide with quality education, expert guidance, and a community that cares about your success.
               </p>
+              <div className="flex items-center gap-4">
+                {[
+                  { icon: Twitter, href: "#" },
+                  { icon: Github, href: "#" },
+                  { icon: Linkedin, href: "#" },
+                  { icon: Instagram, href: "#" }
+                ].map((social, idx) => (
+                  <a 
+                    key={idx}
+                    href={social.href}
+                    className="w-10 h-10 rounded-full bg-secondary hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors flex items-center justify-center"
+                  >
+                    <social.icon className="w-5 h-5" />
+                  </a>
+                ))}
+              </div>
             </div>
-            <div>
-              <h4 className="font-display font-bold text-foreground mb-4">Platform</h4>
-              <ul className="space-y-2">
-                <li><Link to="/courses" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Browse Courses</Link></li>
-                <li><Link to="/articles" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Articles</Link></li>
-                <li><Link to="/games" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Games</Link></li>
+
+            {/* Links Columns */}
+            <div className="lg:col-span-3 md:col-span-4">
+              <h4 className="font-display font-bold text-foreground mb-6">Platform</h4>
+              <ul className="space-y-4">
+                <li><Link to="/courses" className="text-muted-foreground hover:text-primary transition-colors">Browse Courses</Link></li>
+                <li><Link to="/articles" className="text-muted-foreground hover:text-primary transition-colors">Articles</Link></li>
+                <li><Link to="/games" className="text-muted-foreground hover:text-primary transition-colors">Games</Link></li>
+                <li><Link to="/instructors" className="text-muted-foreground hover:text-primary transition-colors">Instructors</Link></li>
               </ul>
             </div>
-            <div>
-              <h4 className="font-display font-bold text-foreground mb-4">Company</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">About Us</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Careers</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Contact</a></li>
+
+            <div className="lg:col-span-3 md:col-span-4">
+              <h4 className="font-display font-bold text-foreground mb-6">Company</h4>
+              <ul className="space-y-4">
+                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">About Us</a></li>
+                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Careers</a></li>
+                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Contact</a></li>
+                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Partners</a></li>
               </ul>
             </div>
-            <div>
-              <h4 className="font-display font-bold text-foreground mb-4">Legal</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Privacy Policy</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Terms of Service</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Cookie Policy</a></li>
-              </ul>
-            </div>
+            
           </div>
-          <div className="pt-8 border-t border-border text-center">
+
+          <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-muted-foreground text-sm">
               © 2024 SmartLearn. All rights reserved.
             </p>
+            
+            {!user && (
+            <div className="flex items-center gap-6">
+              <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</a>
+              <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Terms of Service</a>
+              <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Cookie Policy</a>
+            </div>
+            )}
           </div>
         </div>
       </footer>

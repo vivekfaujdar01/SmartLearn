@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { 
   BookOpen, 
@@ -10,26 +10,26 @@ import {
   Camera,
   Save,
   Shield,
-  Bell,
-  Palette,
   LogOut,
   Check,
   AlertCircle
 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "../context/AuthContext";
+import { updateUserProfile, changeUserPassword } from "../services/userService";
 
 export default function Profile() {
+  const { user, login, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Initialize with context data, but can be updated
   const [profileData, setProfileData] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    bio: "Passionate learner and developer"
+    name: user?.name || "",
+    email: user?.email || "",
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -37,6 +37,16 @@ export default function Profile() {
     newPassword: "",
     confirmPassword: ""
   });
+
+  // Sync with user context if it changes (e.g. after refresh)
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        name: user.name || "",
+        email: user.email || "",
+      });
+    }
+  }, [user]);
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -51,12 +61,23 @@ export default function Profile() {
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast.success("Profile updated successfully!");
-    setIsLoading(false);
+
+    try {
+      const data = await updateUserProfile(profileData);
+      toast.success("Profile updated successfully!");
+      
+      // Update local auth context
+      // Assuming endpoint returns { user: ... }
+      // We need to pass the current token too since login() expects (user, token)
+      // We can grab token from localStorage for now or assume context handles it if we had a dedicated update method
+      const token = localStorage.getItem("token");
+      login(data.user, token); 
+
+    } catch (error) {
+       toast.error(error.message || "Failed to update profile");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePasswordSubmit = async (e) => {
@@ -67,83 +88,45 @@ export default function Profile() {
       return;
     }
     
-    if (passwordData.newPassword.length < 8) {
-      toast.error("Password must be at least 8 characters!");
+    if (passwordData.newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters!");
       return;
     }
     
     setIsLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast.success("Password changed successfully!");
-    setPasswordData({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: ""
-    });
-    setIsLoading(false);
+    try {
+      await changeUserPassword({
+        oldPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+        confirmPassword: passwordData.confirmPassword
+      });
+      
+      toast.success("Password changed successfully!");
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+      });
+    } catch (error) {
+      toast.error(error.message || "Failed to change password");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const tabs = [
     { id: "profile", label: "Profile", icon: User },
     { id: "security", label: "Security", icon: Shield },
-    { id: "notifications", label: "Notifications", icon: Bell },
-    { id: "preferences", label: "Preferences", icon: Palette }
+    // Notifications and Preferences removed as per request
   ];
+
+  if (!user) {
+     return <div className="p-10 text-center">Please log in to view profile.</div>;
+  }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
-                <BookOpen className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-display font-bold text-foreground">
-                SmartLearn
-              </span>
-            </Link>
-
-            <nav className="hidden md:flex items-center gap-8">
-              <Link
-                to="/"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Home
-              </Link>
-              <Link
-                to="/courses"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Courses
-              </Link>
-              <Link
-                to="/articles"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Articles
-              </Link>
-              <Link to="/games" className="text-muted-foreground hover:text-foreground transition-colors">
-                Games
-              </Link>
-            </nav>
-
-            <div className="flex items-center gap-3">
-              <Link 
-                to="/login" 
-                className="px-4 py-2 gradient-primary text-primary-foreground font-medium rounded-lg hover:opacity-90 transition-opacity"
-              >
-                Get Started
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Profile Header */}
       <section className="gradient-hero py-12 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
@@ -156,19 +139,21 @@ export default function Profile() {
             {/* Avatar */}
             <div className="relative group">
               <div className="w-28 h-28 rounded-full gradient-primary flex items-center justify-center text-primary-foreground text-4xl font-bold shadow-lg">
-                JD
+                {profileData.name ? profileData.name.charAt(0).toUpperCase() : "U"}
               </div>
-              <button className="absolute bottom-0 right-0 w-10 h-10 bg-background border border-border rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+              <button className="absolute bottom-0 right-0 w-10 h-10 bg-background border border-border rounded-full flex items-center justify-center shadow-lg cursor-not-allowed opacity-50">
                 <Camera className="w-5 h-5 text-foreground" />
               </button>
             </div>
             
             <div className="text-center sm:text-left">
               <h1 className="text-3xl font-display font-bold text-primary-foreground mb-2">
-                {profileData.firstName} {profileData.lastName}
+                {profileData.name}
               </h1>
               <p className="text-primary-foreground/80">{profileData.email}</p>
-              <p className="text-primary-foreground/60 text-sm mt-1">{profileData.bio}</p>
+              <span className="inline-block mt-2 px-3 py-1 bg-white/20 rounded-full text-xs font-medium text-white capitalize">
+                {user.role}
+              </span>
             </div>
           </div>
         </div>
@@ -200,7 +185,10 @@ export default function Profile() {
               
               <div className="border-t border-border my-2" />
               
-              <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium text-red-500 hover:bg-red-500/10 transition-all duration-200">
+              <button 
+                onClick={logout}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium text-red-500 hover:bg-red-500/10 transition-all duration-200"
+              >
                 <LogOut className="w-5 h-5" />
                 Log Out
               </button>
@@ -217,37 +205,19 @@ export default function Profile() {
                 </h2>
                 
                 <form onSubmit={handleProfileSubmit} className="space-y-6">
-                  <div className="grid sm:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        First Name
-                      </label>
-                      <div className="relative">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                        <input
-                          type="text"
-                          name="firstName"
-                          value={profileData.firstName}
-                          onChange={handleProfileChange}
-                          className="w-full pl-12 pr-4 py-3 bg-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        Last Name
-                      </label>
-                      <div className="relative">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                        <input
-                          type="text"
-                          name="lastName"
-                          value={profileData.lastName}
-                          onChange={handleProfileChange}
-                          className="w-full pl-12 pr-4 py-3 bg-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all"
-                        />
-                      </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Full Name
+                    </label>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <input
+                        type="text"
+                        name="name"
+                        value={profileData.name}
+                        onChange={handleProfileChange}
+                        className="w-full pl-12 pr-4 py-3 bg-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+                      />
                     </div>
                   </div>
                   
@@ -265,20 +235,6 @@ export default function Profile() {
                         className="w-full pl-12 pr-4 py-3 bg-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all"
                       />
                     </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Bio
-                    </label>
-                    <textarea
-                      name="bio"
-                      value={profileData.bio}
-                      onChange={handleProfileChange}
-                      rows={4}
-                      className="w-full px-4 py-3 bg-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all resize-none"
-                      placeholder="Tell us about yourself..."
-                    />
                   </div>
                   
                   <button
@@ -353,7 +309,7 @@ export default function Profile() {
                     </div>
                     <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" />
-                      Password must be at least 8 characters
+                      Password must be at least 6 characters
                     </p>
                   </div>
                   
@@ -402,81 +358,6 @@ export default function Profile() {
                 </form>
               </div>
             )}
-
-            {/* Notifications Tab */}
-            {activeTab === "notifications" && (
-              <div className="bg-card border border-border rounded-2xl p-6 shadow-card">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">
-                  Notification Settings
-                </h2>
-                
-                <div className="space-y-6">
-                  {[
-                    { title: "Email Notifications", desc: "Receive updates about your courses via email" },
-                    { title: "Course Updates", desc: "Get notified when instructors update course content" },
-                    { title: "New Courses", desc: "Be the first to know about new courses in your interests" },
-                    { title: "Promotional Emails", desc: "Receive special offers and discounts" }
-                  ].map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-4 bg-background rounded-xl border border-border">
-                      <div>
-                        <h3 className="font-medium text-foreground">{item.title}</h3>
-                        <p className="text-sm text-muted-foreground">{item.desc}</p>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" className="sr-only peer" defaultChecked={idx < 2} />
-                        <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:bg-primary transition-colors after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-background after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full" />
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Preferences Tab */}
-            {activeTab === "preferences" && (
-              <div className="bg-card border border-border rounded-2xl p-6 shadow-card">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">
-                  Preferences
-                </h2>
-                
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Language
-                    </label>
-                    <select className="w-full max-w-xs px-4 py-3 bg-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all">
-                      <option>English</option>
-                      <option>Spanish</option>
-                      <option>French</option>
-                      <option>German</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Timezone
-                    </label>
-                    <select className="w-full max-w-xs px-4 py-3 bg-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all">
-                      <option>UTC (GMT+0)</option>
-                      <option>EST (GMT-5)</option>
-                      <option>PST (GMT-8)</option>
-                      <option>IST (GMT+5:30)</option>
-                    </select>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-4 bg-background rounded-xl border border-border">
-                    <div>
-                      <h3 className="font-medium text-foreground">Dark Mode</h3>
-                      <p className="text-sm text-muted-foreground">Use dark theme across the platform</p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" className="sr-only peer" />
-                      <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:bg-primary transition-colors after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-background after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full" />
-                    </label>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </main>
@@ -485,7 +366,7 @@ export default function Profile() {
       <footer className="bg-card border-t border-border py-8 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-muted-foreground text-sm">
-            © 2024 LearnHub. All rights reserved.
+            © 2024 SmartLearn. All rights reserved.
           </p>
         </div>
       </footer>

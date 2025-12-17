@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../services/auth";
+import { toast } from "sonner";
 import {
   BookOpen,
   Mail,
@@ -27,7 +28,7 @@ export default function Register() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -48,13 +49,11 @@ export default function Register() {
 
       const data = await registerUser(body);
 
-      // ✅ Save auth data
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      navigate("/dashboard");
+      // ✅ Account created, redirect to login
+      toast.success("Account created successfully! Please log in.");
+      navigate("/login");
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message || "Registration failed");
     } finally {
       setIsLoading(false);
     }

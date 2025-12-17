@@ -18,11 +18,14 @@ export const registerUser = async (formData) => {
 };
 
 // LOGIN
-export const loginUser = async (email, password) => {
+export const loginUser = async (email, password, adminSecret) => {
+  const reqBody = { email, password };
+  if (adminSecret) reqBody.adminSecret = adminSecret;
+
   const res = await fetch(`${BASE_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify(reqBody)
   });
 
   const data = await res.json();
