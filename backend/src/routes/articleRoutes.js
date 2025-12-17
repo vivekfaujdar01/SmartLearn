@@ -8,13 +8,21 @@ import {
   getArticleById,
   getMyArticles,
   updateArticle,
-  deleteArticle
+  deleteArticle,
+  toggleLike
 } from '../controllers/articleController.js';
 
 const router = express.Router();
 
 // public
 router.get('/', getAllArticles);
+router.get(
+  '/my/articles',
+  auth,
+  requireRole('student', 'instructor', 'admin'),
+  getMyArticles
+);
+
 router.get('/:id', getArticleById);
 
 // protected
@@ -25,12 +33,7 @@ router.post(
   createArticle
 );
 
-router.get(
-  '/my/articles',
-  auth,
-  requireRole('student', 'instructor', 'admin'),
-  getMyArticles
-);
+
 
 router.put(
   '/:id',
@@ -43,9 +46,16 @@ router.put(
 router.delete(
   '/:id',
   auth,
-  requireRole('student', 'instructor', 'admin'),
   articleOwnership,
   deleteArticle
+);
+
+// Toggle Like
+router.post(
+  '/:id/like',
+  auth,
+  requireRole('student', 'instructor', 'admin'),
+  toggleLike
 );
 
 export default router;

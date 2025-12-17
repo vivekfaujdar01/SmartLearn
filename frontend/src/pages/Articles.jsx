@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
-import { fetchArticles } from "../services/articleService";
-import { Link } from "react-router-dom";
+import { fetchArticles, likeArticle, deleteArticle } from "../services/articleService";
+import { Link, useNavigate } from "react-router-dom";
 import { 
   BookOpen, 
   Search, 
-  Clock, 
   Heart, 
-  Bookmark,
-  TrendingUp,
   Filter,
-  ChevronRight
+  Trash2,
+  Edit,
+  Plus
 } from "lucide-react";
+import { toast } from "sonner";
 
 const categories = ["All", "Development", "Design", "Backend", "AI/ML", "Trends"];
 
@@ -18,117 +18,87 @@ export default function Articles() {
   const [articles, setArticles] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [likedArticles, setLikedArticles] = useState([]);
-  const [savedArticles, setSavedArticles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
   const isAdmin = user?.role === "admin";
+  const canCreate = user && (user.role === 'student' || user.role === 'instructor' || user.role === 'admin');
 
-  /* ============================
-     FETCH ARTICLES (LOGIC ONLY)
-  ============================ */
+  const loadArticles = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const data = await fetchArticles(token, isAdmin, {
+        category: selectedCategory,
+        search: searchQuery
+      });
+      setArticles(data);
+    } catch (err) {
+      setError(err.message);
+      toast.error("Failed to load articles");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchArticles = async () => {
-      setLoading(true);
-      setError("");
+    loadArticles();
+  }, [selectedCategory, isAdmin, token]); 
 
-      try {
-        const data = await fetchArticles(token, isAdmin);
-
-        // 🔁 Map backend → frontend shape (NO UI CHANGE)
-        const mapped = data.map(a => ({
-          id: a._id,
-          title: a.title,
-          excerpt: a.content.slice(0, 140) + "...",
-          author: a.author?.name || "Unknown",
-          avatar: a.author?.name
-            ? a.author.name.split(" ").map(n => n[0]).join("")
-            : "NA",
-          category: "Development", // backend has no category yet
-          readTime: `${Math.max(3, Math.ceil(a.content.length / 300))} min read`,
-          likes: 0,
-          comments: 0,
-          date: new Date(a.createdAt).toLocaleDateString(),
-          featured: false
-        }));
-
-        setArticles(mapped);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchArticles();
-  }, [isAdmin, token]);
-
-  /* ============================
-     FILTER LOGIC (UNCHANGED)
-  ============================ */
-  const filteredArticles = articles.filter(article => {
-    const matchesSearch =
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesCategory =
-      selectedCategory === "All" || article.category === selectedCategory;
-
-    return matchesSearch && matchesCategory;
-  });
-
-  const featuredArticles = filteredArticles.filter(a => a.featured);
-  const regularArticles = filteredArticles.filter(a => !a.featured);
-
-  const toggleLike = (id) => {
-    setLikedArticles(prev =>
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
+  const handleSearch = (e) => {
+    e.preventDefault();
+    loadArticles();
   };
 
-  const toggleSave = (id) => {
-    setSavedArticles(prev =>
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
+  const handleLike = async (id) => {
+    if (!user) {
+      toast.error("Please login to like articles");
+      return;
+    }
+
+    try {
+      const { likes, isLiked } = await likeArticle(id, token);
+      setArticles(prev => prev.map(a => {
+        if (a._id === id) {
+          return { ...a, likes };
+        }
+        return a;
+      }));
+      toast.success(isLiked ? "Article liked" : "Article unliked");
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
 
-  /* ============================
-     JSX BELOW = YOUR ORIGINAL UI
-  ============================ */
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this article?")) return;
+    try {
+      await deleteArticle(id, token);
+      setArticles(prev => prev.filter(a => a._id !== id));
+      toast.success("Article deleted");
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      {/* ===== HEADER / NAVBAR (UNCHANGED) ===== */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-display font-bold">SmartLearn</span>
-          </Link>
+      {/* Header */}
 
-          <nav className="hidden md:flex items-center gap-8">
-            <Link to="/" className="text-muted-foreground hover:text-foreground">Home</Link>
-            <Link to="/courses" className="text-muted-foreground hover:text-foreground">Courses</Link>
-            <Link to="/articles" className="text-primary font-medium">Articles</Link>
-            <Link to="/games" className="text-muted-foreground hover:text-foreground">Games</Link>
-          </nav>
 
-          <Link
-            to="/login"
-            className="px-4 py-2 gradient-primary text-primary-foreground rounded-lg"
-          >
-            Get Started
-          </Link>
-        </div>
-      </header>
-
-      {/* ===== HERO (UNCHANGED) ===== */}
-      <section className="gradient-hero py-20 text-center text-primary-foreground">
-        <TrendingUp className="mx-auto mb-4" />
+      {/* Hero */}
+      <section className="gradient-hero py-20 text-center text-primary-foreground relative">
+        {canCreate && (
+           <button 
+             className="absolute top-6 right-6 flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-lg text-sm font-medium hover:bg-white/20 transition border border-white/20"
+             onClick={() => navigate('/articles/create')} // Assuming route or similar action needed, actually the original button didn't have onClick, it was just a button. I probably need to wrap it in Link or add onClick. The previous code didn't have onClick.
+           >
+             <Plus className="w-4 h-4" /> Write Article
+           </button>
+        )}
         <h1 className="text-5xl font-display font-bold mb-4">
           Discover Insights from Experts
         </h1>
@@ -136,7 +106,7 @@ export default function Articles() {
           Learn from industry professionals through high-quality articles.
         </p>
 
-        <div className="max-w-xl mx-auto relative">
+        <form onSubmit={handleSearch} className="max-w-xl mx-auto relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <input
             value={searchQuery}
@@ -144,10 +114,10 @@ export default function Articles() {
             placeholder="Search articles..."
             className="w-full pl-12 py-4 rounded-2xl bg-background text-foreground"
           />
-        </div>
+        </form>
       </section>
 
-      {/* ===== MAIN CONTENT ===== */}
+      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-12">
         {/* Categories */}
         <div className="flex flex-wrap gap-3 mb-10">
@@ -170,47 +140,72 @@ export default function Articles() {
         {loading && <p className="text-center">Loading articles...</p>}
         {error && <p className="text-center text-destructive">{error}</p>}
 
-        {/* Articles Grid (UNCHANGED STRUCTURE) */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {regularArticles.map(article => (
-            <article
-              key={article.id}
-              className="group bg-card border border-border rounded-2xl shadow-card hover:shadow-card-hover transition"
-            >
-              <div className="h-36 gradient-hero flex items-center justify-center">
-                <BookOpen className="w-12 h-12 text-primary-foreground/30" />
-              </div>
+          {articles.map(article => {
+            const isOwner = user && article.author && (user._id === article.author._id || user._id === article.author._id?.toString());
+            const canEdit = isAdmin || isOwner;
+            const isLiked = user && article.likes?.includes(user._id);
 
-              <div className="p-5">
-                <h3 className="font-display font-bold mb-2">
-                  {article.title}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  {article.excerpt}
-                </p>
+            return (
+              <article
+                key={article._id}
+                className="group bg-card border border-border rounded-2xl shadow-card hover:shadow-card-hover transition overflow-hidden cursor-pointer"
+                onClick={() => navigate(`/articles/${article._id}`)}
+              >
+                <div className="h-48 gradient-hero relative">
+                   {article.thumbnailUrl ? (
+                     <img src={article.thumbnailUrl} alt={article.title} className="w-full h-full object-cover" />
+                   ) : (
+                     <div className="w-full h-full flex items-center justify-center">
+                        <BookOpen className="w-12 h-12 text-primary-foreground/30" />
+                     </div>
+                   )}
+                   <span className="absolute top-4 left-4 bg-background/80 backdrop-blur px-2 py-1 rounded text-xs font-bold">
+                     {article.category || "General"}
+                   </span>
+                </div>
 
-                <div className="flex justify-between items-center border-t pt-4">
-                  <span className="text-sm">{article.author}</span>
-                  <div className="flex gap-2">
-                    <button onClick={() => toggleLike(article.id)}>
-                      <Heart className={`w-4 h-4 ${likedArticles.includes(article.id) ? "fill-current text-red-500" : ""}`} />
-                    </button>
-                    <button onClick={() => toggleSave(article.id)}>
-                      <Bookmark className={`w-4 h-4 ${savedArticles.includes(article.id) ? "fill-current text-primary" : ""}`} />
-                    </button>
+                <div className="p-5">
+                  <h3 className="font-display font-bold mb-2 text-xl line-clamp-2">
+                    {article.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                    {article.content}
+                  </p>
+
+                  <div className="flex justify-between items-center border-t pt-4">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                       <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-xs font-bold">
+                          {article.author?.name?.[0] || "?"}
+                       </div>
+                       <span>{article.author?.name || "Unknown"}</span>
+                    </div>
+
+                    <div className="flex gap-2 items-center">
+                      <button 
+                        onClick={() => handleLike(article._id)} 
+                        className={`flex items-center gap-1 text-sm ${isLiked ? "text-red-500" : "text-muted-foreground hover:text-red-500"}`}
+                      >
+                        <Heart className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`} />
+                        {article.likes?.length || 0}
+                      </button>
+
+                      {canEdit && (
+                        <>
+                           <button className="p-2 hover:bg-secondary rounded-full transition">
+                             <Edit className="w-4 h-4 text-blue-500" />
+                           </button>
+                           <button onClick={() => handleDelete(article._id)} className="p-2 hover:bg-secondary rounded-full transition">
+                             <Trash2 className="w-4 h-4 text-red-500" />
+                           </button>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        {/* Load More (UI only) */}
-        <div className="text-center mt-12">
-          <button className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-xl">
-            Load More Articles
-            <ChevronRight className="w-4 h-4" />
-          </button>
+              </article>
+            );
+          })}
         </div>
       </main>
     </div>

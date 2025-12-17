@@ -2,27 +2,49 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getMyEnrollments } from "../services/enrollmentService";
-import { BookOpen, Clock, PlayCircle, Sparkles, LayoutDashboard } from "lucide-react";
+import { fetchArticles } from "../services/articleService";
+import { BookOpen, PlayCircle, Sparkles, LayoutDashboard, PenTool } from "lucide-react";
 import { toast } from "sonner";
+import ArticleList from "../components/ArticleList";
 
 export default function StudentDashboard() {
   const { user } = useAuth();
   const [enrollments, setEnrollments] = useState([]);
+  const [myArticles, setMyArticles] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchEnrollments = async () => {
+    const loadData = async () => {
       try {
-        const data = await getMyEnrollments();
-        setEnrollments(data.enrollments || []);
+        const enrollData = await getMyEnrollments();
+        setEnrollments(enrollData.enrollments || []);
+        
+        try {
+            // Fetch my articles using the /my/articles endpoint logic which we added to service via fetchArticles potentially
+            // Wait, fetchArticles takes params. We need a specific call for "my articles".
+            // Let's modify fetchArticles or assume we have getMyArticles in service. 
+            // I checked service earlier, it didn't have getMyArticles export.
+            // I need to add `getMyArticles` to service first or use direct fetch here. 
+            // To be consistent, I'll use direct fetch here for speed or better yet, I'll add it to service in the next tool call.
+            // But for now, I will use direct fetch to avoid context switching too much in one turn.
+            const token = localStorage.getItem("token");
+             const res = await fetch(`${import.meta.env.VITE_API_URL}/articles/my/articles`, {
+                headers: { Authorization: `Bearer ${token}` }
+             });
+             const articlesData = await res.json();
+             if (res.ok) setMyArticles(articlesData);
+        } catch (err) {
+            console.error("Failed to load articles", err);
+        }
+
       } catch (err) {
-        toast.error("Failed to load your courses");
+        toast.error("Failed to load dashboard data");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEnrollments();
+    loadData();
   }, []);
 
   if (loading) {
@@ -35,7 +57,7 @@ export default function StudentDashboard() {
 
   return (
     <div className="min-h-screen bg-background p-6 lg:p-10">
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-12">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -48,17 +70,25 @@ export default function StudentDashboard() {
               Welcome back, {user?.name}! Continue where you left off.
             </p>
           </div>
-          <Link to="/courses" className="px-6 py-3 bg-secondary text-secondary-foreground font-medium rounded-xl hover:bg-secondary/80 transition-colors">
-            Browse More Courses
-          </Link>
+          <div className="flex gap-3">
+             <Link to="/articles/create" className="px-5 py-2.5 bg-secondary text-secondary-foreground font-medium rounded-xl hover:bg-secondary/80 transition-colors flex items-center gap-2">
+                <PenTool className="w-4 h-4" /> Write Article
+             </Link>
+             <Link to="/courses" className="px-5 py-2.5 gradient-primary text-primary-foreground font-medium rounded-xl hover:opacity-90 transition-colors">
+                Browse Courses
+             </Link>
+          </div>
         </div>
 
-        {/* Stats (Optional placeholder) */}
         {/* Stats */}
-        <div className="flex justify-center">
-          <div className="bg-card border border-border p-6 rounded-2xl shadow-sm w-full max-w-sm text-center">
+        <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto md:mx-0">
+          <div className="bg-card border border-border p-6 rounded-2xl shadow-sm text-center">
             <h3 className="text-muted-foreground text-sm font-medium mb-2">Enrolled Courses</h3>
             <p className="text-3xl font-bold">{enrollments.length}</p>
+          </div>
+           <div className="bg-card border border-border p-6 rounded-2xl shadow-sm text-center">
+            <h3 className="text-muted-foreground text-sm font-medium mb-2">My Articles</h3>
+            <p className="text-3xl font-bold">{myArticles.length}</p>
           </div>
         </div>
 
@@ -110,8 +140,6 @@ export default function StudentDashboard() {
                       <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
                         {course.shortDescription}
                       </p>
-
-
                     </div>
                   </Link>
                 );
@@ -128,6 +156,19 @@ export default function StudentDashboard() {
             </div>
           )}
         </section>
+
+        {/* My Articles Section */}
+        <section>
+             <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                    <PenTool className="w-5 h-5" /> My Published Articles
+                </h2>
+                <Link to="/articles/create" className="text-sm text-primary hover:underline">Write New</Link>
+             </div>
+             
+             <ArticleList articles={myArticles} emptyMessage="You haven't written any articles yet." />
+        </section>
+
       </div>
     </div>
   );

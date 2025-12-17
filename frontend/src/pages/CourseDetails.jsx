@@ -10,7 +10,8 @@ import {
   CheckCircle,
   Share2,
   AlertCircle,
-  Trash2
+  Trash2,
+  ArrowLeft
 } from "lucide-react";
 import { toast } from "sonner";
 import { getCourseById, getLessonsByCourseId, deleteLesson } from "../services/courseService";
@@ -128,6 +129,16 @@ export default function CourseDetails() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Back Button */}
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <Link 
+          to="/courses" 
+          className="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border text-foreground rounded-full hover:bg-secondary transition-colors font-medium shadow-sm hover:shadow-md"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Courses
+        </Link>
+      </div>
+
       {/* Hero Section */}
       <div className="bg-muted/30 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-12 lg:py-20 grid lg:grid-cols-2 gap-12 items-center">

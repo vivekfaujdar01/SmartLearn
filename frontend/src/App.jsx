@@ -3,6 +3,9 @@ import  Register from "./pages/Register"
 import { Toaster } from "sonner";
 import { Route,BrowserRouter,Routes } from "react-router-dom"
 import Articles from "./pages/Articles"
+import CreateArticle from "./pages/CreateArticle"
+import ArticleDetails from "./pages/ArticleDetails"
+import EditArticle from "./pages/EditArticle"
 import Games from "./pages/Games"
 import Courses from "./pages/Courses"
 import LandingPage from "./pages/LandingPage"
@@ -32,6 +35,9 @@ export default function App() {
             <Route path="/courses/:id" element={<CourseDetails />} />
             <Route path="/register" element={<Register />}/>
             <Route path="/articles" element={<Articles />}/>
+            <Route path="/articles/create" element={<CreateArticle />}/>
+            <Route path="/articles/:id" element={<ArticleDetails />}/>
+            <Route path="/articles/:id/edit" element={<EditArticle />}/>
             <Route path="/games"  element={<Games />}/>
             <Route path="/profile"  element={<Profile />}/>
             <Route path="/dashboard" element={<StudentDashboard />} />
