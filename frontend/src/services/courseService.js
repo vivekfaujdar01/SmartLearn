@@ -112,3 +112,20 @@ export const getLessonsByCourseId = async (courseId) => {
 
   return data;
 };
+
+export const deleteLesson = async (lessonId) => {
+  const token = localStorage.getItem("token");
+  const API_URL = import.meta.env.VITE_API_URL;
+  const res = await fetch(`${API_URL}/lessons/${lessonId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to delete lesson");
+  }
+  return data;
+};

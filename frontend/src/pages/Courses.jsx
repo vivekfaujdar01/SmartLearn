@@ -175,8 +175,8 @@ export default function Courses() {
                       {(user?.role === "admin" || (user?.role === "instructor" && user?._id === course.instructor?._id)) && (
                          <button 
                            onClick={() => handleDelete(course._id)}
-                           className="text-destructive hover:bg-destructive/10 p-2 rounded-full transition-colors"
-                           title="Delete Course"
+                           className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white p-2 rounded-full transition-all shadow-sm hover:shadow-md"
+                           title="Delete Course - Risky"
                          >
                            <Trash2 className="w-4 h-4" />
                          </button>

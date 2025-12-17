@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, BookOpen, Edit, Trash2, Loader2, Users, DollarSign } from "lucide-react";
+import { Plus, BookOpen, Trash2, Loader2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { listCourses, deleteCourse } from "../services/courseService";
 
@@ -95,25 +95,29 @@ export default function InstructorDashboard() {
               </div>
             ) : (
               courses.map(course => (
-                <div key={course._id} className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition">
-                  <div className="h-40 bg-muted relative">
-                    {course.thumbnailUrl ? (
-                      <img src={course.thumbnailUrl} alt={course.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                        <BookOpen className="w-10 h-10 opacity-20" />
-                      </div>
-                    )}
-                    <span className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold ${course.published ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                      {course.published ? 'Published' : 'Draft'}
-                    </span>
-                  </div>
+                <div key={course._id} className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition group">
+                  <Link to={`/courses/${course._id}`} className="block">
+                    <div className="h-40 bg-muted relative group-hover:opacity-90 transition-opacity">
+                      {course.thumbnailUrl ? (
+                        <img src={course.thumbnailUrl} alt={course.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                          <BookOpen className="w-10 h-10 opacity-20" />
+                        </div>
+                      )}
+                      <span className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold ${course.published ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                        {course.published ? 'Published' : 'Draft'}
+                      </span>
+                    </div>
+                  </Link>
                   
                   <div className="p-5">
-                    <h3 className="font-bold text-lg mb-2 line-clamp-1">{course.title}</h3>
+                    <Link to={`/courses/${course._id}`} className="hover:text-primary transition-colors">
+                      <h3 className="font-bold text-lg mb-2 line-clamp-1">{course.title}</h3>
+                    </Link>
                     <div className="flex justify-between text-sm text-muted-foreground mb-4">
-                      <span className="flex items-center gap-1"><Users className="w-4 h-4" /> 0 students</span>
-                      <span className="flex items-center gap-1"><DollarSign className="w-4 h-4" /> {course.price}</span>
+                      <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {course.studentCount || 0} students</span>
+                      <span className="flex items-center gap-1">₹{course.price}</span>
                     </div>
                     
                     <div className="flex gap-2 mt-4">
@@ -131,7 +135,8 @@ export default function InstructorDashboard() {
                       </Link>
                       <button 
                         onClick={() => handleDelete(course._id)}
-                        className="px-3 py-2 bg-destructive/10 text-destructive rounded-lg hover:bg-destructive/20 transition"
+                        className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 hover:shadow-lg transition-all transform hover:scale-105 flex items-center justify-center"
+                        title="Delete Course (Irreversible)"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

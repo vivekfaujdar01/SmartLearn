@@ -9,10 +9,11 @@ import {
   Lock, 
   CheckCircle,
   Share2,
-  AlertCircle
+  AlertCircle,
+  Trash2
 } from "lucide-react";
 import { toast } from "sonner";
-import { getCourseById, getLessonsByCourseId } from "../services/courseService";
+import { getCourseById, getLessonsByCourseId, deleteLesson } from "../services/courseService";
 import { enrollInCourse, checkEnrollmentStatus } from "../services/enrollmentService";
 import { useAuth } from "../context/AuthContext";
 
@@ -29,7 +30,8 @@ export default function CourseDetails() {
   const navigate = useNavigate(); // For redirecting to login
 
   // Helper to check ownership/admin status safely
-  const isOwner = user && course && course.instructor && user._id === course.instructor._id;
+  // Helper to check ownership/admin status safely
+  const isOwner = user && course && course.instructor && ((user._id || user.id) === course.instructor._id || (user._id || user.id) === course.instructor._id?.toString());
   const isAdmin = user && user.role === 'admin';
   const hasAccess = isEnrolled || isOwner || isAdmin;
 
@@ -146,6 +148,10 @@ export default function CourseDetails() {
             
             <div className="flex flex-wrap gap-6 text-sm text-muted-foreground mb-8">
               <div className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                <span>{course.studentCount || 0} students</span>
+              </div>
+              <div className="flex items-center gap-2">
                 <BookOpen className="w-4 h-4" />
                 <span>{lessons.length} lessons</span>
               </div>
@@ -175,7 +181,7 @@ export default function CourseDetails() {
                   disabled={enrollLoading}
                   className="px-8 py-4 gradient-primary text-primary-foreground font-bold rounded-xl shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 transition-all transform hover:-translate-y-1 disabled:opacity-70 disabled:hover:translate-y-0"
                 >
-                  {enrollLoading ? "Processing..." : (course.price === 0 ? "Enroll Now - Free" : `Buy Now - $${course.price}`)}
+                  {enrollLoading ? "Processing..." : (course.price === 0 ? "Enroll Now - Free" : `Buy Now - ₹${course.price}`)}
                 </button>
               )}
             </div>
@@ -281,6 +287,26 @@ export default function CourseDetails() {
                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded font-medium">
                            Free Preview
                          </span>
+                       )}
+                       
+                       {(isOwner || isAdmin) && (
+                         <button
+                           onClick={(e) => {
+                             e.stopPropagation();
+                             if(window.confirm('Delete this lesson?')) {
+                               deleteLesson(lesson._id)
+                                 .then(() => {
+                                   toast.success('Lesson deleted');
+                                   setLessons(prev => prev.filter(l => l._id !== lesson._id));
+                                 })
+                                 .catch(err => toast.error('Failed to delete'));
+                             }
+                           }}
+                           className="ml-2 p-2 bg-red-100 text-red-600 hover:bg-red-600 hover:text-white rounded-full transition-all shadow-sm hover:shadow-md"
+                           title="Delete Lesson - Risky!"
+                         >
+                           <Trash2 className="w-4 h-4" />
+                         </button>
                        )}
                      </div>
                    ))

@@ -127,9 +127,10 @@ export const getCourseById = asyncHandler(async (req, res) => {
   const course = await Course.findById(id)
     .populate('instructor', 'name email role'); // removed populate('lessons')
 
-  if (!course) return res.status(404).json({ message: 'Course not found' });
+  // Calculate student count
+  const studentCount = await mongoose.model('Enrollment').countDocuments({ course: id });
 
-  res.json({ course });
+  res.json({ course: { ...course.toObject(), studentCount } });
 });
 
 /**
@@ -165,10 +166,16 @@ export const listCourses = asyncHandler(async (req, res) => {
     .skip((page - 1) * limit)
     .limit(limit)
     .select('title shortDescription price category thumbnailUrl instructor published createdAt')
-    .populate('instructor', 'name'); // no lessons populate
+    .populate('instructor', 'name');
+
+  // Add student counts
+  const coursesWithCounts = await Promise.all(courses.map(async (course) => {
+    const studentCount = await mongoose.model('Enrollment').countDocuments({ course: course._id });
+    return { ...course.toObject(), studentCount };
+  }));
 
   res.json({
     meta: { total, page, limit, pages: Math.ceil(total / limit) },
-    courses
+    courses: coursesWithCounts
   });
 });

@@ -85,8 +85,9 @@ export default function AdminDashboard() {
                       <td className="p-4 text-muted-foreground">{article.date}</td>
                       <td className="p-4 text-right">
                         <button 
-                          className="p-2 hover:bg-destructive/10 hover:text-destructive rounded-lg transition"
+                          className="p-2 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-all shadow-sm"
                           onClick={() => toast.info("Delete feature coming soon")}
+                          title="Delete Article"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
