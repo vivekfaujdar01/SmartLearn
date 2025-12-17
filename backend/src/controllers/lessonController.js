@@ -1,4 +1,3 @@
-import Link from '../models/Lesson.js'; // naming it Link? No Lesson
 import Lesson from '../models/Lesson.js';
 import Course from '../models/Course.js';
 import asyncHandler from '../middlewares/asyncHandler.js';
@@ -44,7 +43,7 @@ export const createLesson = asyncHandler(async (req, res) => {
 export const getLessonsByCourse = asyncHandler(async (req, res) => {
     const { courseId } = req.params;
     const lessons = await Lesson.find({ course: courseId }).sort('order');
-    res.json(lessons);
+    res.json({ lessons });
 });
 
 // DELETE LESSON

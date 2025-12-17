@@ -13,6 +13,9 @@ router.get('/:id', courseController.getCourseById);
 // Protected: only instructors or admins can create / update / delete
 router.post('/', auth, requireRole('instructor', 'admin'), courseController.createCourse);
 router.put('/:id', auth, requireRole('instructor', 'admin'), courseController.updateCourse);
+router.put('/:id', auth, requireRole('instructor', 'admin'), courseController.updateCourse);
 router.delete('/:id', auth, requireRole('instructor', 'admin'), courseController.deleteCourse);
+
+
 
 export default router;

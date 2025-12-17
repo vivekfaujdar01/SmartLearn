@@ -45,7 +45,11 @@ const Navbar = () => {
                                 <Link to="/instructor/dashboard" className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600">
                                     <LayoutDashboard className="w-4 h-4" /> Dashboard
                                 </Link>
-                            ) : null}
+                            ) : (
+                                <Link to="/dashboard" className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600">
+                                    <LayoutDashboard className="w-4 h-4" /> Dashboard
+                                </Link>
+                            )}
 
                             <Link to="/profile" className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600">
                                 <User className="w-4 h-4" /> Profile
@@ -90,8 +94,12 @@ const Navbar = () => {
                         {user ? (
                             <div className="space-y-3">
                                 <Link to="/profile" className="block text-sm font-medium text-gray-600">Profile</Link>
-                                {(user.role === 'admin' || user.role === 'instructor') && (
-                                    <Link to={`/${user.role}/dashboard`} className="block text-sm font-medium text-gray-600">Dashboard</Link>
+                                {user.role === 'admin' ? (
+                                    <Link to="/admin/dashboard" className="block text-sm font-medium text-gray-600">Dashboard</Link>
+                                ) : user.role === 'instructor' ? (
+                                    <Link to="/instructor/dashboard" className="block text-sm font-medium text-gray-600">Dashboard</Link>
+                                ) : (
+                                    <Link to="/dashboard" className="block text-sm font-medium text-gray-600">Dashboard</Link>
                                 )}
                                 <button onClick={handleLogout} className="block w-full text-left text-sm font-medium text-red-600">Logout</button>
                             </div>

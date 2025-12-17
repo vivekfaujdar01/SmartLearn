@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { 
   BookOpen, 
   Clock, 
@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { getCourseById, getLessonsByCourseId } from "../services/courseService";
+import { enrollInCourse, checkEnrollmentStatus } from "../services/enrollmentService";
+import { useAuth } from "../context/AuthContext";
 
 export default function CourseDetails() {
   const { id } = useParams();
@@ -20,11 +22,11 @@ export default function CourseDetails() {
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [enrollLoading, setEnrollLoading] = useState(false);
 
-  const user = JSON.parse(localStorage.getItem("user"));
-  // Logic to simulate enrollment (for now, assume enrollment if logged in for demo)
-  // In a real app, we'd check `enrollments` collection
-  const isEnrolled = !!user; 
+  const { user } = useAuth();
+  const navigate = useNavigate(); // For redirecting to login
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,7 +37,13 @@ export default function CourseDetails() {
         ]);
         
         setCourse(courseData.course);
-        setLessons(lessonsData.lessons || []); // Adjust based on actual backend response structure
+        setLessons(lessonsData.lessons || []);
+
+        // Check if enrolled
+        if (user) {
+          const status = await checkEnrollmentStatus(id);
+          setIsEnrolled(status.isEnrolled);
+        }
       } catch (err) {
         setError(err.message);
         toast.error("Failed to load course details");
@@ -45,7 +53,26 @@ export default function CourseDetails() {
     };
 
     fetchData();
-  }, [id]);
+  }, [id, user]);
+
+  const handleEnroll = async () => {
+    if (!user) {
+      toast.error("Please login to enroll");
+      navigate("/login");
+      return;
+    }
+
+    setEnrollLoading(true);
+    try {
+      await enrollInCourse(id);
+      setIsEnrolled(true);
+      toast.success("Successfully enrolled in the course!");
+    } catch (err) {
+      toast.error(err.message || "Failed to enroll");
+    } finally {
+      setEnrollLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -93,14 +120,6 @@ export default function CourseDetails() {
             
             <div className="flex flex-wrap gap-6 text-sm text-muted-foreground mb-8">
               <div className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                <span>1,234 students</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                <span>12h 30m total length</span>
-              </div>
-              <div className="flex items-center gap-2">
                 <BookOpen className="w-4 h-4" />
                 <span>{lessons.length} lessons</span>
               </div>
@@ -117,12 +136,22 @@ export default function CourseDetails() {
             </div>
 
             <div className="flex flex-wrap gap-4">
-              <button className="px-8 py-4 gradient-primary text-primary-foreground font-bold rounded-xl shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 transition-all transform hover:-translate-y-1">
-                {course.price === 0 ? "Enroll Now - Free" : `Buy Now - $${course.price}`}
-              </button>
-              <button className="px-6 py-4 border border-border bg-background text-foreground font-medium rounded-xl hover:bg-muted transition-colors flex items-center gap-2">
-                <Share2 className="w-5 h-5" /> Share
-              </button>
+              {isEnrolled ? (
+                <button 
+                  disabled
+                  className="px-8 py-4 bg-green-600 text-white font-bold rounded-xl shadow-lg flex items-center gap-2 cursor-default"
+                >
+                  <CheckCircle className="w-5 h-5" /> Enrolled
+                </button>
+              ) : (
+                <button 
+                  onClick={handleEnroll}
+                  disabled={enrollLoading}
+                  className="px-8 py-4 gradient-primary text-primary-foreground font-bold rounded-xl shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 transition-all transform hover:-translate-y-1 disabled:opacity-70 disabled:hover:translate-y-0"
+                >
+                  {enrollLoading ? "Processing..." : (course.price === 0 ? "Enroll Now - Free" : `Buy Now - $${course.price}`)}
+                </button>
+              )}
             </div>
           </div>
 

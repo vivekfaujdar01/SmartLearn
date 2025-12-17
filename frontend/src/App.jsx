@@ -7,6 +7,7 @@ import Games from "./pages/Games"
 import Courses from "./pages/Courses"
 import LandingPage from "./pages/LandingPage"
 import Profile from "./pages/Profile"
+import StudentDashboard from "./pages/StudentDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import InstructorDashboard from "./pages/InstructorDashboard";
 import CreateCourse from "./pages/CreateCourse";
@@ -33,6 +34,7 @@ export default function App() {
             <Route path="/articles" element={<Articles />}/>
             <Route path="/games"  element={<Games />}/>
             <Route path="/profile"  element={<Profile />}/>
+            <Route path="/dashboard" element={<StudentDashboard />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
             <Route path="/instructor/create-course" element={<CreateCourse />} />
