@@ -199,7 +199,7 @@ export default function CourseDetails() {
           </div>
 
           <div className="relative group">
-             <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-amber-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+             <div className="absolute -inset-1 bg-linear-to-r from-teal-500 to-amber-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
              <div className="relative aspect-video bg-card rounded-2xl overflow-hidden border border-border shadow-2xl">
                {course.thumbnailUrl ? (
                  <img src={course.thumbnailUrl} alt={course.title} className="w-full h-full object-cover" />

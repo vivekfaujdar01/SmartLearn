@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { fetchArticles, likeArticle, deleteArticle } from "../services/articleService";
+import { getArticleById, likeArticle, deleteArticle } from "../services/articleService";
 import { toast } from "sonner";
 import { 
   ArrowLeft, 
   Calendar, 
-  User, 
-  Clock, 
   Heart, 
- 
   Edit, 
   Trash2,
   BookOpen
@@ -25,23 +22,10 @@ export default function ArticleDetails() {
   useEffect(() => {
     const loadArticle = async () => {
       try {
-        // We can reuse fetchArticles or need a specific getById. 
-        // The service has a generic fetch, but backend has getArticleById. 
-        // Let's check service again. Assuming getArticleById is separate or we use a direct fetch here if service is missing it.
-        // Checking service... fetchArticles fetches all. I need to add getArticleById to service or use direct fetch. 
-        // Wait, I saw getArticleById in backend controller. Let's see if it's in service.
-        // If not, I'll add it. For now, I'll assume I need to add it or use direct fetch.
-        // Actually, to be clean, I should add `getArticleById` to service. 
-        // For this file generation, I will assume it exists or I will implement it here temporarily/add to service in next step.
-        // Let's implement it in service in next step. usage: getArticleById(id)
-        
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/articles/${id}`);
-        const data = await res.json();
-        
-        if (!res.ok) throw new Error(data.message);
+        const data = await getArticleById(id);
         setArticle(data);
       } catch (err) {
-        toast.error("Failed to load article");
+        toast.error(err.message || "Failed to load article");
         navigate("/articles");
       } finally {
         setLoading(false);
@@ -66,27 +50,33 @@ export default function ArticleDetails() {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Delete this article?")) return;
+    if (!window.confirm("Are you sure you want to delete this article?")) return;
     try {
       await deleteArticle(id, token);
-      toast.success("Article deleted");
+      toast.success("Article deleted successfully");
       navigate("/articles");
     } catch (err) {
       toast.error(err.message);
     }
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
   if (!article) return null;
 
-  const isOwner = user && article.author && (user._id === article.author._id || user._id === article.author._id?.toString());
+  const isOwner = user && article.author && (user._id === article.author._id || user._id === article.author);
   const isAdmin = user?.role === 'admin';
   const canEdit = isOwner || isAdmin;
   const isLiked = user && article.likes?.includes(user._id);
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Header Image */}
       <div className="max-w-7xl mx-auto px-6 py-6">
         <Link 
           to="/articles" 
@@ -96,7 +86,6 @@ export default function ArticleDetails() {
         </Link>
       </div>
 
-      {/* Header Image */}
       <div className="h-[40vh] w-full relative bg-muted">
          {article.thumbnailUrl ? (
            <img src={article.thumbnailUrl} alt={article.title} className="w-full h-full object-cover" />
@@ -137,7 +126,6 @@ export default function ArticleDetails() {
                   <span className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" /> {new Date(article.createdAt).toLocaleDateString()}
                   </span>
-
                 </div>
               </div>
             </div>
@@ -155,8 +143,6 @@ export default function ArticleDetails() {
                 <span className="font-medium">{article.likes?.length || 0}</span>
               </button>
               
-
-
               {canEdit && (
                 <>
                   <button 
@@ -177,10 +163,9 @@ export default function ArticleDetails() {
           </div>
 
           <div 
-            className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground w-full break-words overflow-hidden"
+            className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground w-full wrap-break-word overflow-hidden"
             dangerouslySetInnerHTML={{ __html: article.content }}
           />
-
         </div>
       </div>
     </div>
