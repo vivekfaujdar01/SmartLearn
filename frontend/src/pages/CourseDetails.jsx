@@ -28,6 +28,11 @@ export default function CourseDetails() {
   const { user } = useAuth();
   const navigate = useNavigate(); // For redirecting to login
 
+  // Helper to check ownership/admin status safely
+  const isOwner = user && course && course.instructor && user._id === course.instructor._id;
+  const isAdmin = user && user.role === 'admin';
+  const hasAccess = isEnrolled || isOwner || isAdmin;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -74,6 +79,28 @@ export default function CourseDetails() {
     }
   };
 
+  const [expandedLessons, setExpandedLessons] = useState(new Set());
+
+  const toggleLesson = (lessonId) => {
+    setExpandedLessons(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(lessonId)) {
+        newSet.delete(lessonId);
+      } else {
+        newSet.add(lessonId);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleAllLessons = () => {
+    if (expandedLessons.size === lessons.length) {
+      setExpandedLessons(new Set());
+    } else {
+      setExpandedLessons(new Set(lessons.map(l => l._id)));
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -82,8 +109,10 @@ export default function CourseDetails() {
     );
   }
 
+  // ... error check ...
   if (error || !course) {
-    return (
+     // ... (keep existing)
+     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
         <AlertCircle className="w-12 h-12 text-destructive mb-4" />
         <h2 className="text-xl font-bold mb-2">Course Not Found</h2>
@@ -104,9 +133,6 @@ export default function CourseDetails() {
             <div className="flex items-center gap-2 mb-4">
               <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
                 {course.category}
-              </span>
-              <span className="flex items-center text-yellow-500 text-sm font-medium">
-                <Star className="w-4 h-4 fill-current mr-1" /> 4.8 (120 reviews)
               </span>
             </div>
             
@@ -136,12 +162,12 @@ export default function CourseDetails() {
             </div>
 
             <div className="flex flex-wrap gap-4">
-              {isEnrolled ? (
+              {hasAccess ? (
                 <button 
                   disabled
                   className="px-8 py-4 bg-green-600 text-white font-bold rounded-xl shadow-lg flex items-center gap-2 cursor-default"
                 >
-                  <CheckCircle className="w-5 h-5" /> Enrolled
+                  <CheckCircle className="w-5 h-5" /> {isOwner ? "Owner Access" : isAdmin ? "Admin Access" : "Enrolled"}
                 </button>
               ) : (
                 <button 
@@ -196,15 +222,34 @@ export default function CourseDetails() {
             <div className="border border-border rounded-2xl overflow-hidden">
                <div className="bg-muted/50 p-4 border-b border-border flex justify-between text-sm text-muted-foreground">
                  <span>{lessons.length} lessons</span>
-                 <span>Expand All</span>
+                 <button onClick={toggleAllLessons} className="text-primary hover:opacity-75 font-medium cursor-pointer">
+                   {expandedLessons.size === lessons.length ? "Collapse All" : "Expand All"}
+                 </button>
                </div>
                <div className="divide-y divide-border bg-card">
                  {lessons.length > 0 ? (
                    lessons.map((lesson, idx) => (
-                     <div key={lesson._id} className="p-4 flex items-start gap-4 hover:bg-muted/30 transition-colors cursor-pointer group">
+                     <div 
+                        key={lesson._id} 
+                        className="p-4 flex items-start gap-4 hover:bg-muted/30 transition-colors cursor-pointer group"
+                        onClick={() => toggleLesson(lesson._id)}
+                     >
                        <div className="mt-1">
-                         {isEnrolled || lesson.isFree ? (
-                           <PlayCircle className="w-5 h-5 text-primary" />
+                         {(hasAccess || lesson.isFree) ? (
+                           lesson.videoUrl ? (
+                             <a 
+                               href={lesson.videoUrl} 
+                               target="_blank" 
+                               rel="noopener noreferrer"
+                               className="text-primary hover:scale-110 transition-transform block"
+                               onClick={(e) => e.stopPropagation()}
+                               title="Watch Video"
+                             >
+                               <PlayCircle className="w-5 h-5" />
+                             </a>
+                           ) : (
+                             <PlayCircle className="w-5 h-5 text-primary" />
+                           )
                          ) : (
                            <Lock className="w-5 h-5 text-muted-foreground" />
                          )}
@@ -216,9 +261,21 @@ export default function CourseDetails() {
                            </h3>
                            <span className="text-xs text-muted-foreground">{lesson.duration || 10}m</span>
                          </div>
-                         <p className="text-sm text-muted-foreground line-clamp-1">
-                           {lesson.content || "Watch this lesson to learn more."}
+                         <p className={`text-sm text-muted-foreground ${expandedLessons.has(lesson._id) ? '' : 'line-clamp-1'}`}>
+                           {lesson.content || "Watch this lesson."}
                          </p>
+                         
+                         {(hasAccess || lesson.isFree) && lesson.videoUrl && expandedLessons.has(lesson._id) && (
+                            <a 
+                              href={lesson.videoUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 mt-2"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <PlayCircle className="w-4 h-4" /> Watch Video
+                            </a>
+                         )}
                        </div>
                        {lesson.isFree && (
                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded font-medium">
