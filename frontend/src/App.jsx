@@ -6,7 +6,7 @@ import Games from "./pages/Games"
 import Courses from "./pages/Courses"
 import LandingPage from "./pages/LandingPage"
 import Profile from "./pages/Profile"
-function App() {
+export default function App() {
   
   return (
     <BrowserRouter>
