@@ -436,7 +436,6 @@ export default function LandingPage() {
               <ul className="space-y-4">
                 <li><Link to="/courses" className="text-muted-foreground hover:text-primary transition-colors">Browse Courses</Link></li>
                 <li><Link to="/articles" className="text-muted-foreground hover:text-primary transition-colors">Articles</Link></li>
-                <li><Link to="/games" className="text-muted-foreground hover:text-primary transition-colors">Games</Link></li>
                 <li><Link to="/instructors" className="text-muted-foreground hover:text-primary transition-colors">Instructors</Link></li>
               </ul>
             </div>

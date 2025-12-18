@@ -6,7 +6,6 @@ import Articles from "./pages/Articles"
 import CreateArticle from "./pages/CreateArticle"
 import ArticleDetails from "./pages/ArticleDetails"
 import EditArticle from "./pages/EditArticle"
-import Games from "./pages/Games"
 import Courses from "./pages/Courses"
 import LandingPage from "./pages/LandingPage"
 import Profile from "./pages/Profile"
@@ -38,7 +37,6 @@ export default function App() {
             <Route path="/articles/create" element={<CreateArticle />}/>
             <Route path="/articles/:id" element={<ArticleDetails />}/>
             <Route path="/articles/:id/edit" element={<EditArticle />}/>
-            <Route path="/games"  element={<Games />}/>
             <Route path="/profile"  element={<Profile />}/>
             <Route path="/dashboard" element={<StudentDashboard />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />

@@ -8,7 +8,7 @@ const testimonials = [
     rating: "★★★★☆",
   },
   {
-    text: `"The quizzes and games make learning fun. It’s easier to understand concepts now!"`,
+    text: `"The interactive quizzes make learning fun. It’s easier to understand concepts now!"`,
     name: "Abby Gonda",
     img: "/user1.png",
     rating: "★★★★☆",
