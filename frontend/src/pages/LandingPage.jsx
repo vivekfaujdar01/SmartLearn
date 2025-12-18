@@ -156,7 +156,7 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
               <Link 
                 to="/courses" 
-                className="w-full sm:w-auto px-8 py-4 bg-accent text-accent-foreground font-semibold rounded-xl hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg"
+                className="w-full sm:w-auto px-8 py-4 bg-accent text-accent-foreground font-semibold rounded-xl hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg tilt-button glow-hover"
               >
                 Explore Courses
                 <ArrowRight className="w-5 h-5" />
@@ -181,7 +181,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center">
+              <div key={index} className="text-center stat-tilt">
                 <div className="text-3xl sm:text-4xl font-display font-bold text-primary mb-1">
                   {stat.value}
                 </div>
@@ -214,7 +214,7 @@ export default function LandingPage() {
             {features.map((feature, index) => (
               <div 
                 key={index}
-                className="group p-6 bg-card border border-border rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1"
+                className="group p-6 bg-card border border-border rounded-2xl shadow-card feature-tilt"
               >
                 <div className="w-14 h-14 rounded-xl gradient-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
                   <feature.icon className="w-7 h-7 text-primary-foreground" />
@@ -257,7 +257,7 @@ export default function LandingPage() {
             {featuredCourses.map((course) => (
               <div 
                 key={course.id}
-                className="group bg-card border border-border rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1"
+                className="group bg-card border border-border rounded-2xl overflow-hidden shadow-card course-tilt"
               >
                 <div className="h-48 gradient-hero relative">
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -319,7 +319,7 @@ export default function LandingPage() {
             {testimonials.map((testimonial, index) => (
               <div 
                 key={index}
-                className="p-6 bg-card border border-border rounded-2xl shadow-card"
+                className="p-6 bg-card border border-border rounded-2xl shadow-card testimonial-tilt"
               >
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
@@ -362,14 +362,14 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link 
               to="/login" 
-              className="w-full sm:w-auto px-8 py-4 bg-accent text-accent-foreground font-semibold rounded-xl hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-8 py-4 bg-accent text-accent-foreground font-semibold rounded-xl hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 tilt-button glow-hover"
             >
               Get Started for Free
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link 
               to="/courses" 
-              className="w-full sm:w-auto px-8 py-4 bg-primary-foreground/20 text-primary-foreground font-semibold rounded-xl hover:bg-primary-foreground/30 transition-all duration-200 backdrop-blur-sm"
+              className="w-full sm:w-auto px-8 py-4 bg-primary-foreground/20 text-primary-foreground font-semibold rounded-xl hover:bg-primary-foreground/30 transition-all duration-200 backdrop-blur-sm tilt-button"
             >
               Browse Courses
             </Link>
@@ -422,7 +422,7 @@ export default function LandingPage() {
                   <a 
                     key={idx}
                     href={social.href}
-                    className="w-10 h-10 rounded-full bg-secondary hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors flex items-center justify-center"
+                    className="w-10 h-10 rounded-full bg-secondary hover:bg-primary/10 text-muted-foreground hover:text-primary flex items-center justify-center social-tilt"
                   >
                     <social.icon className="w-5 h-5" />
                   </a>

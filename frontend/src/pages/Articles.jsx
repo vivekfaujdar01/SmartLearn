@@ -90,15 +90,7 @@ export default function Articles() {
 
 
       {/* Hero */}
-      <section className="gradient-hero py-20 text-center text-primary-foreground relative">
-        {canCreate && (
-           <button 
-             className="absolute top-6 right-6 flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-lg text-sm font-medium hover:bg-white/20 transition border border-white/20"
-             onClick={() => navigate('/articles/create')} // Assuming route or similar action needed, actually the original button didn't have onClick, it was just a button. I probably need to wrap it in Link or add onClick. The previous code didn't have onClick.
-           >
-             <Plus className="w-4 h-4" /> Write Article
-           </button>
-        )}
+      <section className="gradient-hero py-20 text-center text-primary-foreground">
         <h1 className="text-5xl font-display font-bold mb-4">
           Discover Insights from Experts
         </h1>
@@ -106,15 +98,24 @@ export default function Articles() {
           Learn from industry professionals through high-quality articles.
         </p>
 
-        <form onSubmit={handleSearch} className="max-w-xl mx-auto relative">
+        <form onSubmit={handleSearch} className="max-w-xl mx-auto relative mb-6">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search articles..."
-            className="w-full pl-12 py-4 rounded-2xl bg-background text-foreground"
+            className="w-full pl-12 py-4 rounded-2xl bg-background text-foreground shadow-xl ring-1 ring-white/20 focus:ring-2 focus:ring-primary focus:outline-none transition-all placeholder:text-muted-foreground"
           />
         </form>
+
+        {canCreate && (
+          <button 
+            className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-accent-foreground rounded-xl text-sm font-semibold shadow-lg tilt-button glow-hover"
+            onClick={() => navigate('/articles/create')}
+          >
+            <Plus className="w-5 h-5" /> Write Article
+          </button>
+        )}
       </section>
 
       {/* Main Content */}
@@ -126,7 +127,7 @@ export default function Articles() {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full text-sm ${
+              className={`px-4 py-2 rounded-full text-sm tilt-button ${
                 selectedCategory === cat
                   ? "gradient-primary text-primary-foreground"
                   : "border border-border text-muted-foreground"
@@ -149,7 +150,7 @@ export default function Articles() {
             return (
               <article
                 key={article._id}
-                className="group bg-card border border-border rounded-2xl shadow-card hover:shadow-card-hover transition overflow-hidden cursor-pointer"
+                className="group bg-card border border-border rounded-2xl shadow-card course-tilt overflow-hidden cursor-pointer"
                 onClick={() => navigate(`/articles/${article._id}`)}
               >
                 <div className="h-48 gradient-hero relative">

@@ -105,7 +105,7 @@ export default function Courses() {
             value={searchQuery}
             onChange={handleSearch}
             placeholder="Search courses..."
-            className="w-full pl-12 py-4 rounded-2xl bg-background text-foreground"
+            className="w-full pl-12 py-4 rounded-2xl bg-background text-foreground shadow-xl ring-1 ring-white/20 focus:ring-2 focus:ring-primary focus:outline-none transition-all placeholder:text-muted-foreground"
           />
         </div>
       </section>
@@ -119,7 +119,7 @@ export default function Courses() {
             <button
               key={cat}
               onClick={() => handleCategoryChange(cat)}
-              className={`px-4 py-2 rounded-full text-sm ${
+              className={`px-4 py-2 rounded-full text-sm tilt-button ${
                 selectedCategory === cat
                   ? "gradient-primary text-primary-foreground"
                   : "border border-border text-muted-foreground hover:text-foreground"
@@ -141,7 +141,7 @@ export default function Courses() {
             .map(course => (
               <article
                 key={course._id}
-                className="bg-card border border-border rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition"
+                className="bg-card border border-border rounded-2xl overflow-hidden shadow-card course-tilt"
               >
                 <div className="h-48 gradient-hero relative">
                   {course.thumbnailUrl ? (
