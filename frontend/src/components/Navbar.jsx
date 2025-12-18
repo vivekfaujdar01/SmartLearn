@@ -18,10 +18,10 @@ const Navbar = () => {
             <div className='max-w-7xl mx-auto flex items-center justify-between py-4 px-6'>
 
                 <Link to="/" className='flex items-center gap-2'>
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-lg bg-linear-to-tr from-blue-600 to-indigo-600 flex items-center justify-center">
                         <BookOpen className="w-5 h-5 text-white" />
                     </div>
-                    <h1 className='text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 tracking-tight'>
+                    <h1 className='text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-600 to-indigo-600 tracking-tight'>
                         SmartLearn
                     </h1>
                 </Link>
