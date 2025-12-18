@@ -19,11 +19,13 @@ import EditCourse from "./pages/EditCourse";
 import CourseDetails from "./pages/CourseDetails";
 import TicTacToe from "./pages/TicTacToe";
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import Navbar from "./components/Navbar";
 
 export default function App() {
   
   return (
+    <ThemeProvider>
     <BrowserRouter>
       <AuthProvider>
         <Navbar />
@@ -51,6 +53,6 @@ export default function App() {
         <Toaster position="top-right" richColors />
       </AuthProvider>
     </BrowserRouter>
-    
+    </ThemeProvider>
   )
 }
