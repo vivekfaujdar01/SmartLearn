@@ -71,11 +71,11 @@ export default function StudentDashboard() {
             </p>
           </div>
           <div className="flex gap-3">
-             <Link to="/articles/create" className="px-5 py-2.5 bg-secondary text-secondary-foreground font-medium rounded-xl hover:bg-secondary/80 transition-colors flex items-center gap-2">
+             <Link to="/articles/create" className="px-5 py-2.5 gradient-primary text-primary-foreground font-semibold rounded-xl shadow-lg tilt-button glow-hover flex items-center gap-2">
                 <PenTool className="w-4 h-4" /> Write Article
              </Link>
-             <Link to="/courses" className="px-5 py-2.5 gradient-primary text-primary-foreground font-medium rounded-xl hover:opacity-90 transition-colors">
-                Browse Courses
+             <Link to="/courses" className="px-5 py-2.5 gradient-primary text-primary-foreground font-semibold rounded-xl shadow-lg tilt-button glow-hover flex items-center gap-2">
+                <BookOpen className="w-4 h-4" /> Browse Courses
              </Link>
           </div>
         </div>

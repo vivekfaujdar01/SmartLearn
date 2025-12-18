@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, BookOpen, Trash2, Loader2, Users, FileText, LayoutDashboard } from "lucide-react";
+import { Plus, BookOpen, Trash2, Loader2, Users, FileText, LayoutDashboard, PenTool } from "lucide-react";
 import { toast } from "sonner";
 import { listCourses, deleteCourse } from "../services/courseService";
 import ArticleList from "../components/ArticleList";
@@ -76,13 +76,13 @@ export default function InstructorDashboard() {
           <div className="flex gap-3">
              <Link 
                 to="/articles/create" 
-                className="px-4 py-2 gradient-primary text-primary-foreground rounded-xl flex items-center gap-2 font-medium"
+                className="px-5 py-2.5 gradient-primary text-primary-foreground rounded-xl flex items-center gap-2 font-semibold shadow-lg tilt-button glow-hover"
               >
-                <Plus className="w-4 h-4" /> Write Article
+                <PenTool className="w-4 h-4" /> Write Article
               </Link>
              <Link 
                to="/instructor/create-course" 
-               className="px-4 py-2 gradient-primary text-primary-foreground rounded-xl flex items-center gap-2 font-medium"
+               className="px-5 py-2.5 gradient-primary text-primary-foreground rounded-xl flex items-center gap-2 font-semibold shadow-lg tilt-button glow-hover"
              >
                <Plus className="w-4 h-4" /> Create Course
              </Link>
