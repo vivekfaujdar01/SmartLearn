@@ -17,6 +17,7 @@ import AddChapter from "./pages/AddChapter";
 
 import EditCourse from "./pages/EditCourse";
 import CourseDetails from "./pages/CourseDetails";
+import TicTacToe from "./pages/TicTacToe";
 import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 
@@ -44,6 +45,7 @@ export default function App() {
             <Route path="/instructor/create-course" element={<CreateCourse />} />
             <Route path="/instructor/course/:courseId/add-chapter" element={<AddChapter />} />
             <Route path="/instructor/course/:courseId/edit" element={<EditCourse />} />
+            <Route path="/games/tictactoe" element={<TicTacToe />} />
           </Routes>
         </div>
         <Toaster position="top-right" richColors />

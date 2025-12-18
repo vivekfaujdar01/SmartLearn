@@ -31,6 +31,13 @@ const Navbar = () => {
                     <li><Link to="/" className="hover:text-blue-600 transition-colors">Home</Link></li>
                     <li><Link to="/courses" className="hover:text-blue-600 transition-colors">Courses</Link></li>
                     <li><Link to="/articles" className="hover:text-blue-600 transition-colors">Articles</Link></li>
+                    {user && (
+                        <li>
+                            <Link to="/games/tictactoe" className="hover:text-blue-600 transition-colors flex items-center gap-1">
+                                Games
+                            </Link>
+                        </li>
+                    )}
                 </ul>
 
                 <div className="hidden md:flex items-center gap-4">
@@ -88,6 +95,11 @@ const Navbar = () => {
                     <Link to="/" className="block text-sm font-medium text-gray-600">Home</Link>
                     <Link to="/courses" className="block text-sm font-medium text-gray-600">Courses</Link>
                     <Link to="/articles" className="block text-sm font-medium text-gray-600">Articles</Link>
+                    {user && (
+                        <Link to="/games/tictactoe" className="flex items-center gap-2 text-sm font-medium text-gray-600">
+                            <Gamepad2 className="w-4 h-4" /> Games
+                        </Link>
+                    )}
                     <div className="pt-4 border-t border-gray-100">
                         {user ? (
                             <div className="space-y-3">
