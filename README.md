@@ -1,205 +1,228 @@
-## Backend Progress
+# SmartLearn 🎓
 
-### Overview
-I've implemented course listing, course details retrieval, and role-based access control. I optimized course details by removing lesson population and ensured only instructors/admins can manage courses.
+A full-stack educational platform built with **React** (Frontend) and **Express.js** (Backend). SmartLearn enables students to learn through courses and articles, while instructors can create and manage educational content.
 
-Auth routes (`auth/register`, `auth/login`) are public for user registration and login.
-
----
-
-### API Routes
-
-#### Public Routes
-
-**GET `/api/courses`**
-- List all courses with pagination
-- URL: `http://localhost:8000/api/courses`
-
-**GET `/api/courses/:id`**
-- Get course details by ID
-- URL: `http://localhost:8000/api/courses/<COURSE_ID>`
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat&logo=mongodb&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white)
 
 ---
 
-#### Protected Routes (Authentication + Role Required)
+## 📁 Project Structure
 
-**POST `/api/courses`** (Instructor/Admin only)
-- Create a new course
-- URL: `http://localhost:8000/api/courses`
-- Header: `Authorization: Bearer <TOKEN>`
-- Body:
-```json
-{
-  "title": "Mastering Node.js",
-  "shortDescription": "Complete beginner to advanced course",
-  "description": "Full course content...",
-  "price": 499,
-  "category": "backend",
-  "thumbnailUrl": "https://example.com/node.jpg"
-}
 ```
-- Response: `{ "course": { "_id": "65f1...", "title": "Mastering Node.js", ... } }`
-
-**PUT `/api/courses/:id`** (Instructor/Admin only)
-- Update an existing course
-- Header: `Authorization: Bearer <TOKEN>`
-- Body: `{ "title": "Updated Title", "price": 599 }`
-- Response: `{ "course": { "_id": "...", "title": "Updated Title", ... } }`
-
-**DELETE `/api/courses/:id`** (Instructor/Admin only)
-- Delete a course
-- Header: `Authorization: Bearer <TOKEN>`
-- Response: `{ "message": "Course removed" }`
+SmartLearn/
+├── backend/                 # Express.js REST API
+│   ├── src/
+│   │   ├── controllers/     # Request handlers
+│   │   ├── models/          # Mongoose schemas
+│   │   ├── routes/          # API route definitions
+│   │   ├── middlewares/     # Auth, role, async handlers
+│   │   ├── config/          # Database configuration
+│   │   └── app.js           # Express app setup
+│   └── package.json
+│
+├── frontend/                # React + Vite application
+│   ├── src/
+│   │   ├── pages/           # Page components
+│   │   ├── components/      # Reusable UI components
+│   │   ├── services/        # API service functions
+│   │   ├── context/         # React Context (Auth)
+│   │   └── App.jsx          # Main app with routing
+│   └── package.json
+│
+└── README.md                # This file
+```
 
 ---
 
-#### Auth Routes
+## 🚀 Quick Start
 
-**POST `/api/auth/register`** (Public)
-- User registration
-- Body:
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "securepassword",
-  "role": "student"
-}
-```
-- For Instructor Registration:
-```json
-{
-  "name": "Jane Instructor",
-  "email": "instructor@example.com",
-  "password": "securepassword",
-  "role": "instructor"
-}
-```
-- For Admin Registration:
-```json
-{
-  "name": "Admin User",
-  "email": "admin@example.com",
-  "password": "securepassword",
-  "role": "admin",
-  "adminSecret": "YOUR_SECRET_KEY"
-}
-```
-- Response:
-```json
-{
-  "success": true,
-  "token": "eyJhbG...",
-  "user": {
-    "id": "...",
-    "name": "John Doe",
-    "email": "john@example.com",
-    "role": "student" // or "admin", "instructor"
-  }
-}
+### Prerequisites
+
+- **Node.js** v18 or higher
+- **MongoDB** (local or cloud instance like MongoDB Atlas)
+- **npm** or **yarn**
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/vivekfaujdar01/SmartLearn.git
+cd SmartLearn
 ```
 
-**POST `/api/auth/login`** (Public)
-- User login
-- Body:
-```json
-{
-  "email": "john@example.com",
-  "password": "securepassword"
-}
-```
-- For Admin Login:
-```json
-{
-  "email": "admin@example.com",
-  "password": "securepassword",
-  "adminSecret": "YOUR_SECRET_KEY"
-}
-```
-- Response:
-```json
-{
-  "success": true,
-  "token": "eyJhbG...",
-  "user": {
-    "id": "...",
-    "name": "John Doe",
-    "email": "john@example.com",
-    "role": "student" // or "admin"
-  }
-}
+### 2. Backend Setup
+
+```bash
+cd backend
+npm install
 ```
 
-**GET `/api/users/me`** (Protected)
-- Get current user profile
-- Header: `Authorization: Bearer <TOKEN>`
-- Response: `{ "user": { "_id": "...", "name": "John Doe", "email": "john@example.com", "role": "instructor", "createdAt": "..." } }`
+Create a `.env` file in the `backend` folder:
 
-**PUT `/api/users/me`** (Protected)
-- Update user profile
-- Header: `Authorization: Bearer <TOKEN>`
-- Body: `{ "name": "John Updated", "email": "newemail@example.com" }`
+```env
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/smartlearn
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRES_IN=7d
+CORS_ORIGIN=http://localhost:5173
+ADMIN_SECRET=your_admin_secret_key
+```
 
-**PUT `/api/users/change-password`** (Protected)
-- Change password
-- Header: `Authorization: Bearer <TOKEN>`
-- Body: `{ "oldPassword": "...", "newPassword": "...", "confirmPassword": "..." }`
-- Errors: Invalid fields (400), weak password (400), mismatch (400), incorrect old password (401), user not found (404)
+Start the backend server:
 
+```bash
+npm run dev    # Development with nodemon
+npm start      # Production
+```
+
+### 3. Frontend Setup
+
+```bash
+cd frontend
+npm install
+```
+
+Create a `.env` file in the `frontend` folder:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+Start the frontend development server:
+
+```bash
+npm run dev
+```
 
 ---
 
-#### Article Routes
+## 🔗 API Overview
 
-**GET `/api/articles`**
-- Get all articles (Public)
-- URL: `http://localhost:8000/api/articles`
-- Response: `[ { "_id": "...", "title": "...", "content": "...", "author": { "name": "..." }, "createdAt": "..." } ]`
+| Base Path | Description |
+|-----------|-------------|
+| `/api/auth` | Authentication (Register/Login) |
+| `/api/users` | User profile management |
+| `/api/courses` | Course CRUD operations |
+| `/api/articles` | Article CRUD with likes |
+| `/api/admin` | Admin-only routes |
+| `/api/enrollments` | Course enrollment |
+| `/api/lessons` | Lesson management |
 
-**GET `/api/articles/:id`**
-- Get article by ID (Public)
-- URL: `http://localhost:8000/api/articles/<ARTICLE_ID>`
-- Response: `{ "_id": "...", "title": "...", "content": "...", "author": { "name": "..." } }`
-
-**POST `/api/articles`** (Student/Instructor/Admin)
-- Create a new article
-- Header: `Authorization: Bearer <TOKEN>`
-- Body:
-```json
-{
-  "title": "My Article Title",
-  "content": "Article content goes here..."
-}
-```
-- Response: `{ "_id": "...", "title": "My Article Title", "content": "...", "author": "...", "createdAt": "..." }`
-
-**GET `/api/articles/my/articles`** (Student/Instructor/Admin)
-- Get my articles
-- Header: `Authorization: Bearer <TOKEN>`
-- Response: `[ { "_id": "...", "title": "...", ... } ]`
-
-**PUT `/api/articles/:id`** (Owner only)
-- Update an article
-- Header: `Authorization: Bearer <TOKEN>`
-- Body:
-```json
-{
-  "title": "Updated Title",
-  "content": "Updated content..."
-}
-```
-- Response: `{ "_id": "...", "title": "Updated Title", ... }`
-
-**DELETE `/api/articles/:id`** (Owner only)
-- Delete an article
-- Header: `Authorization: Bearer <TOKEN>`
-- Response: `{ "message": "Article deleted successfully" }`
+> **📖 For complete API documentation with request/response examples, see [`backend/README.md`](./backend/README.md)**
 
 ---
 
-#### Admin Article Routes
+## 🎨 Frontend Pages
 
-**GET `/api/admin/articles`** (Admin only)
-- Get all articles (Admin view with email)
-- Header: `Authorization: Bearer <TOKEN>`
-- Response: `[ { "_id": "...", "title": "...", "author": { "name": "...", "email": "..." }, ... } ]`
+| Route | Page | Description |
+|-------|------|-------------|
+| `/` | Landing Page | Home page with hero, features |
+| `/login` | Login | User authentication |
+| `/register` | Register | New user registration |
+| `/courses` | Courses | Browse all courses |
+| `/courses/:id` | Course Details | Course info, lessons, enrollment |
+| `/articles` | Articles | Browse articles |
+| `/articles/:id` | Article Details | Read article with likes |
+| `/articles/create` | Create Article | Write new article |
+| `/profile` | Profile | User profile management |
+| `/dashboard` | Student Dashboard | Student's enrolled courses |
+| `/instructor/dashboard` | Instructor Dashboard | Manage created courses |
+| `/admin/dashboard` | Admin Dashboard | Platform administration |
+| `/games/tictactoe` | Tic Tac Toe | Fun brain-break game |
+
+> **📖 For complete frontend documentation, see [`frontend/README.md`](./frontend/README.md)**
+
+---
+
+## 👥 User Roles
+
+| Role | Capabilities |
+|------|-------------|
+| **Student** | Browse courses, enroll, read/write articles, like articles |
+| **Instructor** | All student abilities + create/edit/delete own courses and lessons |
+| **Admin** | All privileges + manage all content, access admin dashboard |
+
+---
+
+## 🛠 Tech Stack
+
+### Backend
+- **Express.js 5** - Web framework
+- **MongoDB + Mongoose** - Database & ODM
+- **JWT** - Authentication tokens
+- **bcryptjs** - Password hashing
+- **CORS** - Cross-origin support
+
+### Frontend
+- **React 19** - UI library
+- **Vite** - Build tool
+- **React Router 7** - Client-side routing
+- **Tailwind CSS 4** - Styling
+- **Axios** - HTTP client
+- **Sonner** - Toast notifications
+- **Lucide React** - Icons
+- **React Quill** - Rich text editor
+
+---
+
+## 📝 Environment Variables
+
+### Backend (`backend/.env`)
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `PORT` | Server port | `5000` |
+| `MONGO_URI` | MongoDB connection string | `mongodb://localhost:27017/smartlearn` |
+| `JWT_SECRET` | Secret for JWT signing | `your-secret-key` |
+| `JWT_EXPIRES_IN` | Token expiration | `7d` |
+| `CORS_ORIGIN` | Allowed origins (comma-separated) | `http://localhost:5173` |
+| `ADMIN_SECRET` | Secret for admin registration/login | `admin-secret-key` |
+
+### Frontend (`frontend/.env`)
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `VITE_API_URL` | Backend API base URL | `http://localhost:5000/api` |
+
+---
+
+## 🧪 Available Scripts
+
+### Backend
+
+```bash
+npm run dev     # Start with nodemon (hot reload)
+npm start       # Start production server
+```
+
+### Frontend
+
+```bash
+npm run dev     # Start Vite dev server
+npm run build   # Build for production
+```
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the ISC License.
+
+---
+
+## 👨‍💻 Authors
+
+- **Vivek Faujdar** - [GitHub](https://github.com/vivekfaujdar01)
