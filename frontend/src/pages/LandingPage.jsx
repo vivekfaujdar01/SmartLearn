@@ -435,9 +435,9 @@ export default function LandingPage() {
             <div className="lg:col-span-3 md:col-span-4">
               <h4 className="font-display font-bold text-foreground mb-6">Company</h4>
               <ul className="space-y-4">
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">About Us</a></li>
+                <li><Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">About Us</Link></li>
                 <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Careers</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Contact</a></li>
+                <li><Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">Contact</Link></li>
                 <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Partners</a></li>
               </ul>
             </div>
@@ -446,7 +446,7 @@ export default function LandingPage() {
 
           <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-muted-foreground text-sm">
-              © 2024 SmartLearn. All rights reserved.
+              © 2025 SmartLearn. All rights reserved.
             </p>
             
             {!user && (

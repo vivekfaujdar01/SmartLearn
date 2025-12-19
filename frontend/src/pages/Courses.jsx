@@ -180,7 +180,7 @@ export default function Courses() {
       </main>
 
       <footer className="border-t border-border py-6 text-center text-sm text-muted-foreground">
-        © 2024 SmartLearn. All rights reserved.
+        © 2025 SmartLearn. All rights reserved.
       </footer>
     </div>
   );

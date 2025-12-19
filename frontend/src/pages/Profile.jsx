@@ -366,7 +366,7 @@ export default function Profile() {
       <footer className="bg-card border-t border-border py-8 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-muted-foreground text-sm">
-            © 2024 SmartLearn. All rights reserved.
+            © 2025 SmartLearn. All rights reserved.
           </p>
         </div>
       </footer>
