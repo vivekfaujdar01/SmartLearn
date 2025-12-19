@@ -57,13 +57,21 @@ export default function EditArticle() {
 
     try {
       const token = localStorage.getItem("token");
+      const user = JSON.parse(localStorage.getItem("user"));
       await updateArticle(id, {
         ...formData,
         tags: formData.tags.split(",").map(t => t.trim())
       }, token);
       
       toast.success("Article updated successfully!");
-      navigate(`/articles/${id}`);
+      // Navigate to appropriate dashboard based on role
+      if (user?.role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (user?.role === "instructor") {
+        navigate("/instructor/dashboard");
+      } else {
+        navigate("/articles");
+      }
     } catch (err) {
       toast.error(err.message || "Failed to update article");
     } finally {
@@ -112,9 +120,9 @@ export default function EditArticle() {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full p-3 border rounded-xl bg-card"
+                className="w-full p-3 border rounded-xl bg-card text-foreground [&>option]:bg-card [&>option]:text-foreground"
               >
-                {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                {categories.map(c => <option key={c} value={c} className="bg-card text-foreground">{c}</option>)}
               </select>
             </div>
 

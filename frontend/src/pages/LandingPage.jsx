@@ -263,14 +263,6 @@ export default function LandingPage() {
                   <div className="absolute inset-0 flex items-center justify-center">
                     <BookOpen className="w-16 h-16 text-primary-foreground/30" />
                   </div>
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 bg-accent text-accent-foreground text-xs font-semibold rounded-full">
-                      {course.category}
-                    </span>
-                  </div>
-                  <div className="absolute top-4 right-4 px-3 py-1 bg-background/90 backdrop-blur-sm text-foreground text-sm font-bold rounded-full">
-                    ${course.price}
-                  </div>
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-display font-bold text-foreground mb-3 group-hover:text-primary transition-colors">

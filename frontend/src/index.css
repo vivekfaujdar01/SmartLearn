@@ -135,6 +135,27 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Fix select dropdowns in dark mode */
+select {
+  background-color: var(--card);
+  color: var(--foreground);
+}
+
+select option {
+  background-color: var(--card);
+  color: var(--foreground);
+}
+
+.dark select {
+  background-color: hsl(230, 25%, 11%);
+  color: hsl(220, 20%, 95%);
+}
+
+.dark select option {
+  background-color: hsl(230, 25%, 15%);
+  color: hsl(220, 20%, 95%);
+}
+
 h1,
 h2,
 h3,

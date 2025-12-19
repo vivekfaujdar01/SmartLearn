@@ -7,8 +7,6 @@ import {
   Users,
   Star,
   Filter,
-  ChevronLeft,
-  ChevronRight,
   Play,
   GraduationCap,
   Sparkles,
@@ -23,12 +21,10 @@ import { useAuth } from "../context/AuthContext";
 
 export default function Courses() {
   const [courses, setCourses] = useState([]);
-  const [meta, setMeta] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [currentPage, setCurrentPage] = useState(1);
 
   const { user } = useAuth();
   const isInstructor = user?.role === "instructor" || user?.role === "admin";
@@ -51,20 +47,17 @@ export default function Courses() {
     setError(null);
     try {
       const data = await listCourses({
-        page: currentPage,
-        limit: 9,
         search: searchQuery,
         category: selectedCategory === "All" ? "" : selectedCategory
       });
 
       setCourses(data.courses || []);
-      setMeta(data.meta || {});
     } catch (err) {
       setError(err.message || "Failed to load courses");
     } finally {
       setLoading(false);
     }
-  }, [currentPage, searchQuery, selectedCategory]);
+  }, [searchQuery, selectedCategory]);
 
   useEffect(() => {
     fetchCourses();
@@ -72,16 +65,10 @@ export default function Courses() {
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
-    setCurrentPage(1);
   };
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= meta.pages) setCurrentPage(page);
   };
 
   return (
@@ -137,7 +124,7 @@ export default function Courses() {
         {/* Course Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses
-            .filter(c => isInstructor || c.published)
+            .filter(course => course.published || (user && (user._id === course.instructor?._id || user._id === course.instructor)))
             .map(course => (
               <article
                 key={course._id}
@@ -153,9 +140,6 @@ export default function Courses() {
                   ) : (
                     <GraduationCap className="w-16 h-16 text-primary-foreground/40 mx-auto mt-16" />
                   )}
-                  <span className="absolute top-4 right-4 bg-accent px-3 py-1 rounded-full text-sm">
-                    ₹{course.price}
-                  </span>
                 </div>
 
                 <div className="p-5">
@@ -193,27 +177,6 @@ export default function Courses() {
               </article>
             ))}
         </div>
-
-        {/* Pagination */}
-        {meta.pages > 1 && (
-          <div className="flex justify-center gap-2 mt-12">
-            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-              <ChevronLeft />
-            </button>
-            {[...Array(meta.pages)].map((_, i) => (
-              <button
-                key={i}
-                onClick={() => handlePageChange(i + 1)}
-                className={currentPage === i + 1 ? "font-bold" : ""}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === meta.pages}>
-              <ChevronRight />
-            </button>
-          </div>
-        )}
       </main>
 
       <footer className="border-t border-border py-6 text-center text-sm text-muted-foreground">

@@ -161,9 +161,6 @@ export default function Articles() {
                         <BookOpen className="w-12 h-12 text-primary-foreground/30" />
                      </div>
                    )}
-                   <span className="absolute top-4 left-4 bg-background/80 backdrop-blur px-2 py-1 rounded text-xs font-bold">
-                     {article.category || "General"}
-                   </span>
                 </div>
 
                 <div className="p-5">

@@ -1,17 +1,40 @@
 import { useState, useEffect } from "react";
 import { fetchArticles } from "../services/articleService";
+import { listCourses, deleteCourse } from "../services/courseService";
 import { toast } from "sonner";
-import { Shield, BookOpen, Trash2, Edit, Loader2, FileText, Plus, PenTool } from "lucide-react";
+import { Shield, BookOpen, Trash2, Edit, Loader2, FileText, Plus, PenTool, GraduationCap } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import ArticleList from "../components/ArticleList";
 
 export default function AdminDashboard() {
   const [articles, setArticles] = useState([]);
   const [myArticles, setMyArticles] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
+
+  const loadCourses = async () => {
+    try {
+      const data = await listCourses({ limit: 0 }); // Fetch all courses (no limit)
+      setCourses(data.courses || []);
+    } catch (err) {
+      console.error("Failed to load courses:", err);
+    }
+  };
+
+  const handleDeleteCourse = async (courseId) => {
+    if (!window.confirm("Are you sure you want to delete this course? This action cannot be undone.")) return;
+    
+    try {
+      await deleteCourse(courseId);
+      toast.success("Course deleted successfully");
+      loadCourses(); // Refresh list
+    } catch (err) {
+      toast.error(err.message || "Failed to delete course");
+    }
+  };
 
   useEffect(() => {
     if (!user || user.role !== "admin") {
@@ -43,6 +66,9 @@ export default function AdminDashboard() {
         } catch (err) {
             console.error(err);
         }
+
+        // Load All Courses
+        await loadCourses();
 
       } catch (err) {
         toast.error(err.message);
@@ -117,7 +143,14 @@ export default function AdminDashboard() {
                         </td>
                         <td className="p-4 text-muted-foreground">{article.author}</td>
                         <td className="p-4 text-muted-foreground">{article.date}</td>
-                        <td className="p-4 text-right">
+                        <td className="p-4 text-right flex items-center justify-end gap-2">
+                            <Link 
+                            to={`/articles/${article.id}/edit`}
+                            className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-all shadow-sm"
+                            title="Edit Article"
+                            >
+                            <Edit className="w-4 h-4" />
+                            </Link>
                             <button 
                             className="p-2 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-all shadow-sm"
                             onClick={() => toast.info("Use Article Details page to delete")}
@@ -128,6 +161,74 @@ export default function AdminDashboard() {
                         </td>
                         </tr>
                     ))}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+
+            {/* Global Courses Section */}
+            <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm mt-10">
+                <div className="p-6 border-b border-border flex justify-between items-center">
+                <h2 className="font-semibold flex items-center gap-2">
+                    <GraduationCap className="w-5 h-5" />
+                    Manage All Platform Courses ({courses.length})
+                </h2>
+                <Link to="/instructor/courses/create" className="px-4 py-2 gradient-primary text-primary-foreground font-semibold rounded-lg shadow-md flex items-center gap-2 text-sm">
+                    <Plus className="w-4 h-4" /> Create Course
+                </Link>
+                </div>
+                
+                <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                    <thead className="bg-muted/50 text-muted-foreground">
+                    <tr>
+                        <th className="p-4 font-medium">Title</th>
+                        <th className="p-4 font-medium">Instructor</th>
+                        <th className="p-4 font-medium">Category</th>
+                        <th className="p-4 font-medium">Status</th>
+                        <th className="p-4 font-medium text-right">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                    {courses.map((course) => (
+                        <tr key={course._id} className="hover:bg-muted/30 transition">
+                        <td className="p-4 font-medium">
+                            <Link to={`/courses/${course._id}`} className="hover:text-primary underline-offset-4 hover:underline">
+                                {course.title}
+                            </Link>
+                        </td>
+                        <td className="p-4 text-muted-foreground">{course.instructor?.name || "Unknown"}</td>
+                        <td className="p-4 text-muted-foreground">{course.category || "General"}</td>
+                        <td className="p-4">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${course.published ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                                {course.published ? "Published" : "Draft"}
+                            </span>
+                        </td>
+                        <td className="p-4 text-right flex items-center justify-end gap-2">
+                            <Link 
+                            to={`/instructor/course/${course._id}/edit`}
+                            className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-all shadow-sm"
+                            title="Edit Course"
+                            >
+                            <Edit className="w-4 h-4" />
+                            </Link>
+                            <button 
+                            className="p-2 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-all shadow-sm"
+                            onClick={() => handleDeleteCourse(course._id)}
+                            title="Delete Course"
+                            >
+                            <Trash2 className="w-4 h-4" />
+                            </button>
+                        </td>
+                        </tr>
+                    ))}
+                    {courses.length === 0 && (
+                        <tr>
+                        <td colSpan="5" className="p-8 text-center text-muted-foreground">
+                            No courses available on the platform yet.
+                        </td>
+                        </tr>
+                    )}
                     </tbody>
                 </table>
                 </div>

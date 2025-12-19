@@ -9,6 +9,8 @@ export default function EditCourse() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const dashboardPath = user?.role === "admin" ? "/admin/dashboard" : "/instructor/dashboard";
   
   const [formData, setFormData] = useState({
     title: "",
@@ -35,7 +37,7 @@ export default function EditCourse() {
         });
       } catch (err) {
         toast.error("Failed to load course details");
-        navigate("/instructor/dashboard");
+        navigate(dashboardPath);
       } finally {
         setLoading(false);
       }
@@ -59,6 +61,7 @@ export default function EditCourse() {
     try {
       await updateCourse(courseId, formData);
       toast.success("Course updated successfully!");
+      navigate(dashboardPath);
     } catch (err) {
       toast.error(err.message || "Failed to update course");
     } finally {
@@ -77,7 +80,7 @@ export default function EditCourse() {
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-3xl mx-auto">
-        <Link to="/instructor/dashboard" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
+        <Link to={dashboardPath} className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="w-4 h-4" /> Back to Dashboard
         </Link>
         
@@ -109,16 +112,16 @@ export default function EditCourse() {
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded-xl bg-card"
+                  className="w-full p-3 border rounded-xl bg-card text-foreground [&>option]:bg-card [&>option]:text-foreground"
                 >
                   {["Development", "Business", "Design", "Marketing", "Lifestyle"].map(c => (
-                    <option key={c} value={c}>{c}</option>
+                    <option key={c} value={c} className="bg-card text-foreground">{c}</option>
                   ))}
                 </select>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Price ($)</label>
+                <label className="text-sm font-medium">Price (₹)</label>
                 <input
                   type="number"
                   name="price"

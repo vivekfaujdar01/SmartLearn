@@ -136,12 +136,10 @@ export const getCourseById = asyncHandler(async (req, res) => {
 /**
  * List courses
  * - supports search (title / shortDescription), category, price filters
- * - supports pagination and sorting via query params
+ * - supports sorting via query params
  */
 export const listCourses = asyncHandler(async (req, res) => {
-  let { page = 1, limit = 10, search = '', category, sort = 'createdAt:desc', price } = req.query;
-  page = parseInt(page, 10) || 1;
-  limit = Math.max(1, parseInt(limit, 10) || 10);
+  const { search = '', category, sort = 'createdAt:desc', price } = req.query;
 
   const query = {};
 
@@ -159,12 +157,8 @@ export const listCourses = asyncHandler(async (req, res) => {
   const [sortField, sortDir] = sort.split(':');
   const sortObj = { [sortField || 'createdAt']: sortDir === 'asc' ? 1 : -1 };
 
-  const total = await Course.countDocuments(query);
-
   const courses = await Course.find(query)
     .sort(sortObj)
-    .skip((page - 1) * limit)
-    .limit(limit)
     .select('title shortDescription price category thumbnailUrl instructor published createdAt')
     .populate('instructor', 'name');
 
@@ -175,7 +169,7 @@ export const listCourses = asyncHandler(async (req, res) => {
   }));
 
   res.json({
-    meta: { total, page, limit, pages: Math.ceil(total / limit) },
+    total: courses.length,
     courses: coursesWithCounts
   });
 });

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, BookOpen, DollarSign, Image as ImageIcon, Layout, Type, Save } from "lucide-react";
+import { ArrowLeft, BookOpen, IndianRupee, Image as ImageIcon, Layout, Type, Save } from "lucide-react";
 import { toast } from "sonner";
 import { createCourse } from "../services/courseService";
 
@@ -97,7 +97,7 @@ export default function CreateCourse() {
             {/* Price */}
             <div className="space-y-2">
               <label className="text-sm font-medium flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-primary" /> Price (INR)
+                <IndianRupee className="w-4 h-4 text-primary" /> Price (₹)
               </label>
               <input
                 type="number"
@@ -118,13 +118,13 @@ export default function CreateCourse() {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full p-3 border rounded-xl bg-card"
+                className="w-full p-3 border rounded-xl bg-card text-foreground [&>option]:bg-card [&>option]:text-foreground"
               >
-                <option value="Development">Development</option>
-                <option value="Design">Design</option>
-                <option value="Business">Business</option>
-                <option value="Marketing">Marketing</option>
-                <option value="AI/ML">AI/ML</option>
+                <option value="Development" className="bg-card text-foreground">Development</option>
+                <option value="Design" className="bg-card text-foreground">Design</option>
+                <option value="Business" className="bg-card text-foreground">Business</option>
+                <option value="Marketing" className="bg-card text-foreground">Marketing</option>
+                <option value="AI/ML" className="bg-card text-foreground">AI/ML</option>
               </select>
             </div>
           </div>
