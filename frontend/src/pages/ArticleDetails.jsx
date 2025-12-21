@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getArticleById, likeArticle, deleteArticle } from "../services/articleService";
 import { toast } from "sonner";
+import DOMPurify from "dompurify";
 import { 
   ArrowLeft, 
   Calendar, 
@@ -164,7 +165,7 @@ export default function ArticleDetails() {
 
           <div 
             className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground w-full wrap-break-word overflow-hidden"
-            dangerouslySetInnerHTML={{ __html: article.content }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
           />
         </div>
       </div>

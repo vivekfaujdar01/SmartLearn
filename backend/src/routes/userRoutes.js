@@ -58,8 +58,16 @@ router.put('/change-password', auth, asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'Please provide old password, new password, and confirm password' });
   }
 
-  if (newPassword.length < 6) {
-    return res.status(400).json({ message: 'New password must be at least 6 characters' });
+  if (newPassword.length < 8) {
+    return res.status(400).json({ message: 'New password must be at least 8 characters' });
+  }
+
+  // Strong password policy: require uppercase, lowercase, and number
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
+  if (!passwordRegex.test(newPassword)) {
+    return res.status(400).json({
+      message: 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+    });
   }
 
   if (newPassword !== confirmPassword) {

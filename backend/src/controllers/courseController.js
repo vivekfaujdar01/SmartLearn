@@ -3,6 +3,9 @@ import Course from '../models/Course.js';
 import asyncHandler from '../middlewares/asyncHandler.js';
 import mongoose from 'mongoose';
 
+// Helper function to escape special regex characters (prevent ReDoS)
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 /**
  * Create a course
  * - only accessible to authenticated users with role 'instructor' or 'admin'
@@ -144,9 +147,11 @@ export const listCourses = asyncHandler(async (req, res) => {
   const query = {};
 
   if (search) {
+    // Escape regex special characters to prevent ReDoS attacks
+    const safeSearch = escapeRegex(search);
     query.$or = [
-      { title: { $regex: search, $options: 'i' } },
-      { shortDescription: { $regex: search, $options: 'i' } }
+      { title: { $regex: safeSearch, $options: 'i' } },
+      { shortDescription: { $regex: safeSearch, $options: 'i' } }
     ];
   }
 

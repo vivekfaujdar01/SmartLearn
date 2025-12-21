@@ -1,13 +1,35 @@
 import Article from '../models/Article.js';
 
+// Helper function to escape special regex characters (prevent ReDoS)
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 // CREATE
 export const createArticle = async (req, res) => {
+  // Input validation
+  const { title, content, thumbnailUrl, category, tags } = req.body;
+
+  if (!title || title.trim().length === 0) {
+    return res.status(400).json({ message: 'Title is required' });
+  }
+
+  if (title.length > 200) {
+    return res.status(400).json({ message: 'Title must be less than 200 characters' });
+  }
+
+  if (!content || content.trim().length === 0) {
+    return res.status(400).json({ message: 'Content is required' });
+  }
+
+  if (content.length > 100000) {
+    return res.status(400).json({ message: 'Content is too large (max 100,000 characters)' });
+  }
+
   const article = await Article.create({
-    title: req.body.title,
-    content: req.body.content,
-    thumbnailUrl: req.body.thumbnailUrl,
-    category: req.body.category,
-    tags: req.body.tags,
+    title: title.trim(),
+    content,
+    thumbnailUrl,
+    category,
+    tags,
     author: req.user._id
   });
 
@@ -24,9 +46,11 @@ export const getAllArticles = async (req, res) => {
   }
 
   if (search) {
+    // Escape regex special characters to prevent ReDoS attacks
+    const safeSearch = escapeRegex(search);
     query.$or = [
-      { title: { $regex: search, $options: 'i' } },
-      { content: { $regex: search, $options: 'i' } }
+      { title: { $regex: safeSearch, $options: 'i' } },
+      { content: { $regex: safeSearch, $options: 'i' } }
     ];
   }
 
