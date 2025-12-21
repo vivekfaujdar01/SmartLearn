@@ -255,13 +255,17 @@ export default function LandingPage() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredCourses.map((course) => (
-              <div 
+              <Link 
                 key={course.id}
-                className="group bg-card border border-border rounded-2xl overflow-hidden shadow-card course-tilt"
+                to="/courses"
+                className="group bg-card border border-border rounded-2xl overflow-hidden shadow-card course-tilt block"
               >
-                <div className="h-48 gradient-hero relative">
-                  <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-48 gradient-hero relative overflow-hidden">
+                  <div className="absolute inset-0 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
                     <BookOpen className="w-16 h-16 text-primary-foreground/30" />
+                  </div>
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <span className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full font-medium">Explore More</span>
                   </div>
                 </div>
                 <div className="p-6">
@@ -285,7 +289,7 @@ export default function LandingPage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

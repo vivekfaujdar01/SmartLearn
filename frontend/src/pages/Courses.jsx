@@ -128,49 +128,54 @@ export default function Courses() {
             .map(course => (
               <article
                 key={course._id}
-                className="bg-card border border-border rounded-2xl overflow-hidden shadow-card course-tilt"
+                className="bg-card border border-border rounded-2xl overflow-hidden shadow-card course-tilt flex flex-col group"
               >
-                <div className="h-48 gradient-hero relative">
-                  {course.thumbnailUrl ? (
-                    <img
-                      src={course.thumbnailUrl}
-                      alt={course.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <GraduationCap className="w-16 h-16 text-primary-foreground/40 mx-auto mt-16" />
-                  )}
-                </div>
-
-                <div className="p-5">
-                  <h3 className="font-display font-bold mb-2">{course.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-1">
-                    {course.shortDescription || "No description"}
-                  </p>
-
-                  <div className="flex justify-between text-sm text-muted-foreground mb-4">
-                    <span><Star className="inline w-4 h-4 text-accent" /> 4.5</span>
-                    <span><Clock className="inline w-4 h-4" /> 10h</span>
+                <Link to={`/courses/${course._id}`} className="flex-1">
+                  <div className="h-48 gradient-hero relative overflow-hidden">
+                    {course.thumbnailUrl ? (
+                      <img
+                        src={course.thumbnailUrl}
+                        alt={course.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    ) : (
+                      <GraduationCap className="w-16 h-16 text-primary-foreground/40 mx-auto mt-16" />
+                    )}
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <span className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full font-medium">View Course</span>
+                    </div>
                   </div>
 
+                  <div className="p-5">
+                    <h3 className="font-display font-bold mb-2 group-hover:text-primary transition-colors">{course.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-1">
+                      {course.shortDescription || "No description"}
+                    </p>
+
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span><Star className="inline w-4 h-4 text-accent" /> 4.5</span>
+                      <span><Clock className="inline w-4 h-4" /> 10h</span>
+                    </div>
+                  </div>
+                </Link>
+
+                <div className="p-5 pt-0">
                   <div className="flex justify-between items-center border-t pt-4">
-                    <span className="text-sm">{course.instructor?.name}</span>
+                    <span className="text-sm text-muted-foreground">{course.instructor?.name}</span>
                     <div className="flex items-center gap-3">
                       {(user?.role === "admin" || (user?.role === "instructor" && user?._id === course.instructor?._id)) && (
                          <button 
-                           onClick={() => handleDelete(course._id)}
+                           onClick={(e) => {
+                             e.preventDefault();
+                             e.stopPropagation();
+                             handleDelete(course._id);
+                           }}
                            className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white p-2 rounded-full transition-all shadow-sm hover:shadow-md"
                            title="Delete Course - Risky"
                          >
                            <Trash2 className="w-4 h-4" />
                          </button>
                       )}
-                      <Link
-                        to={`/courses/${course._id}`}
-                        className="text-primary text-sm hover:underline"
-                      >
-                        View Course
-                      </Link>
                     </div>
                   </div>
                 </div>

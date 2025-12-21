@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, BookOpen, Trash2, Loader2, Users, FileText, LayoutDashboard, PenTool } from "lucide-react";
+import { Plus, BookOpen, Trash2, Loader2, Users, FileText, LayoutDashboard, PenTool, PlayCircle } from "lucide-react";
 import { toast } from "sonner";
 import { listCourses, deleteCourse } from "../services/courseService";
+import { getMyEnrollments } from "../services/enrollmentService";
 import ArticleList from "../components/ArticleList";
 
 export default function InstructorDashboard() {
   const [courses, setCourses] = useState([]);
+  const [enrollments, setEnrollments] = useState([]);
   const [myArticles, setMyArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -28,6 +30,14 @@ export default function InstructorDashboard() {
           return courseInstructorId === userId || user.role === 'admin'; // simplification
         });
         setCourses(myCourses);
+
+        // Load Enrollments
+        try {
+            const enrollData = await getMyEnrollments();
+            setEnrollments(enrollData.enrollments || []);
+        } catch (err) {
+            console.error("Failed to load enrollments", err);
+        }
 
         // Load Articles
         try {
@@ -110,46 +120,52 @@ export default function InstructorDashboard() {
                     </div>
                     ) : (
                     courses.map(course => (
-                        <div key={course._id} className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition group">
-                        <Link to={`/courses/${course._id}`} className="block">
-                            <div className="h-40 bg-muted relative group-hover:opacity-90 transition-opacity">
-                            {course.thumbnailUrl ? (
-                                <img src={course.thumbnailUrl} alt={course.title} className="w-full h-full object-cover" />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                                <BookOpen className="w-10 h-10 opacity-20" />
+                        <div key={course._id} className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition group flex flex-col">
+                            <Link to={`/courses/${course._id}`} className="flex-1">
+                                <div className="h-40 bg-muted relative group-hover:opacity-90 transition-opacity">
+                                    {course.thumbnailUrl ? (
+                                        <img src={course.thumbnailUrl} alt={course.title} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                                            <BookOpen className="w-10 h-10 opacity-20" />
+                                        </div>
+                                    )}
+                                    <span className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold ${course.published ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                        {course.published ? 'Published' : 'Draft'}
+                                    </span>
                                 </div>
-                            )}
-                            <span className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold ${course.published ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                                {course.published ? 'Published' : 'Draft'}
-                            </span>
-                            </div>
-                        </Link>
-                        
-                        <div className="p-5">
-                            <Link to={`/courses/${course._id}`} className="hover:text-primary transition-colors">
-                            <h3 className="font-bold text-lg mb-2 line-clamp-1">{course.title}</h3>
+                                
+                                <div className="p-5 pb-0">
+                                    <h3 className="font-bold text-lg mb-2 line-clamp-1 group-hover:text-primary transition-colors">{course.title}</h3>
+                                    <div className="flex justify-between text-sm text-muted-foreground mb-4">
+                                        <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {course.studentCount || 0} students</span>
+                                        <span className="flex items-center gap-1">₹{course.price}</span>
+                                    </div>
+                                </div>
                             </Link>
-                            <div className="flex justify-between text-sm text-muted-foreground mb-4">
-                            <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {course.studentCount || 0} students</span>
-                            <span className="flex items-center gap-1">₹{course.price}</span>
-                            </div>
                             
-                            <div className="flex gap-2 mt-4">
+                            <div className="p-5 pt-4">
+                                <div className="flex gap-2">
                             <Link 
                                 to={`/instructor/course/${course._id}/edit`} 
+                                onClick={(e) => e.stopPropagation()}
                                 className="flex-1 px-3 py-2 bg-primary/10 text-primary rounded-lg text-sm font-medium text-center hover:bg-primary/20 transition"
                             >
                                 Edit
                             </Link>
                             <Link 
                                 to={`/instructor/course/${course._id}/add-chapter`} 
+                                onClick={(e) => e.stopPropagation()}
                                 className="flex-1 px-3 py-2 bg-secondary/10 text-secondary-foreground rounded-lg text-sm font-medium text-center hover:bg-secondary/20 transition"
                             >
                                 + Chapter
                             </Link>
                             <button 
-                                onClick={() => handleDelete(course._id)}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleDelete(course._id);
+                                }}
                                 className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all transform hover:scale-105 flex items-center justify-center"
                                 title="Delete Course (Irreversible)"
                             >
@@ -161,6 +177,58 @@ export default function InstructorDashboard() {
                     ))
                     )}
                 </div>
+            </section>
+
+            {/* Enrolled Courses Section */}
+            <section>
+                <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                    <BookOpen className="w-5 h-5 text-primary" /> Courses I'm Learning
+                </h2>
+
+                {enrollments.length > 0 ? (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {enrollments.map((enrollment) => {
+                            const course = enrollment.course;
+                            return (
+                                <Link 
+                                    key={enrollment._id} 
+                                    to={`/courses/${course._id}`}
+                                    className="group bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 block"
+                                >
+                                    <div className="relative h-40 bg-muted overflow-hidden">
+                                        {course.thumbnailUrl ? (
+                                            <img src={course.thumbnailUrl} alt={course.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                <BookOpen className="w-10 h-10 text-muted-foreground/30" />
+                                            </div>
+                                        )}
+                                        
+                                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <span className="px-4 py-2 bg-white/20 backdrop-blur text-white rounded-full font-medium flex items-center gap-2">
+                                                <PlayCircle className="w-4 h-4" /> Continue
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="p-5">
+                                        <h3 className="font-bold text-lg mb-2 line-clamp-1 group-hover:text-primary transition-colors">
+                                            {course.title}
+                                        </h3>
+                                        <p className="text-sm text-muted-foreground line-clamp-2">
+                                            {course.shortDescription}
+                                        </p>
+                                    </div>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div className="text-center py-10 bg-muted/20 rounded-2xl border border-dashed border-border">
+                        <p className="text-muted-foreground">You aren't enrolled in any courses yet.</p>
+                        <Link to="/courses" className="text-primary hover:underline text-sm font-medium">Browse Courses</Link>
+                    </div>
+                )}
             </section>
 
              {/* Articles Section */}
