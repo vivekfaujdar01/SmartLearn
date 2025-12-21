@@ -1,0 +1,27 @@
+services:
+  # Backend service
+  - type: web
+    name: smartlearn-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.0.0
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        sync: false # Set this to your frontend URL later
+
+  # Frontend static site (Optional: Render can also host the frontend)
+  - type: static
+    name: smartlearn-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false # Set this to your backend URL later
