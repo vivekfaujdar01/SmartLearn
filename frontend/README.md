@@ -31,7 +31,9 @@ frontend/
 │   │   ├── StudentDashboard.jsx  # Student dashboard
 │   │   ├── InstructorDashboard.jsx # Instructor dashboard
 │   │   ├── AdminDashboard.jsx    # Admin dashboard
-│   │   └── TicTacToe.jsx         # Fun game
+│   │   ├── TicTacToe.jsx         # Fun game
+│   │   ├── About.jsx             # About the platform
+│   │   └── Contact.jsx           # Contact page
 │   │
 │   ├── components/          # Reusable UI components
 │   │   ├── Navbar.jsx            # Navigation bar
@@ -40,7 +42,8 @@ frontend/
 │   │   ├── ArticleList.jsx       # Article cards
 │   │   ├── Products.jsx          # Product showcase
 │   │   ├── Roadmap.jsx           # Learning roadmap
-│   │   └── Testmonials.jsx       # Testimonials
+│   │   ├── Testmonials.jsx       # Testimonials
+│   │   └── TiltCard.jsx          # 3D tilt hover effect
 │   │
 │   ├── services/            # API service functions
 │   │   ├── auth.js               # Authentication API
@@ -50,7 +53,8 @@ frontend/
 │   │   └── userService.js        # User API
 │   │
 │   ├── context/             # React Context
-│   │   └── AuthContext.jsx       # Authentication state
+│   │   ├── AuthContext.jsx       # Authentication state
+│   │   └── ThemeContext.jsx      # Dark/Light theme toggle
 │   │
 │   └── assets/              # Static assets
 │       └── need.css              # Additional styles
@@ -103,6 +107,8 @@ npm run build
 | `/articles` | `Articles` | Browse all articles |
 | `/articles/:id` | `ArticleDetails` | Read article |
 | `/games/tictactoe` | `TicTacToe` | Tic Tac Toe game |
+| `/about` | `About` | About the platform |
+| `/contact` | `Contact` | Contact form and info |
 
 ### Protected Routes (Require Login)
 
@@ -391,6 +397,7 @@ px-6 py-3 rounded-lg font-semibold hover:scale-105 transition-transform
 | `sonner` | Toast notifications |
 | `lucide-react` | Icon library |
 | `react-quill-new` | Rich text editor |
+| `dompurify` | HTML sanitization |
 
 ### Dev Dependencies
 

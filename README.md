@@ -132,6 +132,8 @@ npm run dev
 | `/instructor/dashboard` | Instructor Dashboard | Manage created courses |
 | `/admin/dashboard` | Admin Dashboard | Platform administration |
 | `/games/tictactoe` | Tic Tac Toe | Fun brain-break game |
+| `/about` | About Us | About the platform |
+| `/contact` | Contact | Contact form and information |
 
 > **📖 For complete frontend documentation, see [`frontend/README.md`](./frontend/README.md)**
 
@@ -158,17 +160,60 @@ npm run dev
 
 ### Frontend
 - **React 19** - UI library
-- **Vite** - Build tool
+- **Vite 7** - Build tool
 - **React Router 7** - Client-side routing
 - **Tailwind CSS 4** - Styling
 - **Axios** - HTTP client
 - **Sonner** - Toast notifications
 - **Lucide React** - Icons
 - **React Quill** - Rich text editor
+- **DOMPurify** - HTML sanitization
 
 ---
 
-## 📝 Environment Variables
+## � Security Measures
+
+SmartLearn implements multiple layers of security to protect user data and prevent attacks:
+
+### Backend Security
+
+| Feature | Implementation | Description |
+|---------|----------------|-------------|
+| **Security Headers** | `helmet` | Adds HTTP security headers (XSS protection, Content-Type sniffing prevention, etc.) |
+| **Rate Limiting** | `express-rate-limit` | Prevents DDoS and brute-force attacks |
+| **Password Hashing** | `bcryptjs` | Passwords are hashed with bcrypt before storage |
+| **JWT Authentication** | `jsonwebtoken` | Secure stateless authentication with expiring tokens |
+| **CORS Protection** | Configured origins | Only allowed origins can access the API |
+| **Admin Secret** | Environment variable | Admin registration requires a secret key |
+| **Request Size Limits** | Express config | JSON/URL-encoded bodies limited to 16kb |
+
+### Rate Limiting Rules
+
+| Endpoint | Limit | Window |
+|----------|-------|--------|
+| General API (`/api/*`) | 100 requests | 15 minutes |
+| Auth Routes (`/api/auth`) | 10 requests | 1 hour |
+
+### Frontend Security
+
+| Feature | Implementation | Description |
+|---------|----------------|-------------|
+| **HTML Sanitization** | `DOMPurify` | Prevents XSS attacks in rich text content |
+| **Secure Token Storage** | localStorage | JWT stored client-side (consider httpOnly cookies for production) |
+| **Role-based UI** | React Context | UI elements shown based on user role |
+
+### Best Practices Implemented
+
+- ✅ Passwords never returned in API responses
+- ✅ JWT tokens expire after configured duration
+- ✅ Role-based access control (Student, Instructor, Admin)
+- ✅ Article/Course ownership validation before edit/delete
+- ✅ Environment variables for sensitive configuration
+- ✅ Input validation on all API endpoints
+
+---
+
+## �📝 Environment Variables
 
 ### Backend (`backend/.env`)
 

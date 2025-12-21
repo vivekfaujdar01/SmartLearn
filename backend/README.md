@@ -610,4 +610,6 @@ Delete a lesson.
 | `cors` | Cross-origin support |
 | `dotenv` | Environment variables |
 | `slugify` | URL slug generation |
+| `helmet` | Security headers |
+| `express-rate-limit` | Rate limiting |
 | `nodemon` | Development hot-reload |
