@@ -124,7 +124,7 @@ npm run build
 
 | Path | Component | Description |
 |------|-----------|-------------|
-| `/instructor/dashboard` | `InstructorDashboard` | Manage created courses |
+| `/instructor/dashboard` | `InstructorDashboard` | Manage created & enrolled courses |
 | `/instructor/create-course` | `CreateCourse` | Create new course |
 | `/instructor/course/:courseId/edit` | `EditCourse` | Edit course details |
 | `/instructor/course/:courseId/add-chapter` | `AddChapter` | Add lesson to course |
@@ -342,7 +342,7 @@ function ProfileButton() {
 
 ### Dashboards
 - **Student:** Enrolled courses, progress
-- **Instructor:** Created courses, student stats
+- **Instructor:** Created courses, enrolled courses, student stats
 - **Admin:** Platform overview, content management
 
 ### Profile

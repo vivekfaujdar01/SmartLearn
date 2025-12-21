@@ -129,7 +129,7 @@ npm run dev
 | `/articles/create` | Create Article | Write new article |
 | `/profile` | Profile | User profile management |
 | `/dashboard` | Student Dashboard | Student's enrolled courses |
-| `/instructor/dashboard` | Instructor Dashboard | Manage created courses |
+| `/instructor/dashboard` | Instructor Dashboard | Manage created & enrolled courses |
 | `/admin/dashboard` | Admin Dashboard | Platform administration |
 | `/games/tictactoe` | Tic Tac Toe | Fun brain-break game (requires login) |
 | `/about` | About Us | About the platform |
