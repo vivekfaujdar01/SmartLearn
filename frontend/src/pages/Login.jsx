@@ -33,7 +33,7 @@ export default function Login() {
       } else if (data.user.role === "instructor") {
         navigate("/instructor/dashboard");
       } else {
-        navigate("/");
+        navigate("/dashboard");
       }
     } catch (err) {
       toast.error(err.message || "Login failed");
