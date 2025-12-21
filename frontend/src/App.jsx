@@ -21,6 +21,7 @@ import TicTacToe from "./pages/TicTacToe";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { ThemeProvider } from "./context/ThemeContext";
 import Navbar from "./components/Navbar";
 
@@ -49,7 +50,7 @@ export default function App() {
             <Route path="/instructor/create-course" element={<CreateCourse />} />
             <Route path="/instructor/course/:courseId/add-chapter" element={<AddChapter />} />
             <Route path="/instructor/course/:courseId/edit" element={<EditCourse />} />
-            <Route path="/games/tictactoe" element={<TicTacToe />} />
+            <Route path="/games/tictactoe" element={<ProtectedRoute><TicTacToe /></ProtectedRoute>} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>

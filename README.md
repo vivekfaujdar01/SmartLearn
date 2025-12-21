@@ -131,7 +131,7 @@ npm run dev
 | `/dashboard` | Student Dashboard | Student's enrolled courses |
 | `/instructor/dashboard` | Instructor Dashboard | Manage created courses |
 | `/admin/dashboard` | Admin Dashboard | Platform administration |
-| `/games/tictactoe` | Tic Tac Toe | Fun brain-break game |
+| `/games/tictactoe` | Tic Tac Toe | Fun brain-break game (requires login) |
 | `/about` | About Us | About the platform |
 | `/contact` | Contact | Contact form and information |
 

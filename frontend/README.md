@@ -43,7 +43,8 @@ frontend/
 │   │   ├── Products.jsx          # Product showcase
 │   │   ├── Roadmap.jsx           # Learning roadmap
 │   │   ├── Testmonials.jsx       # Testimonials
-│   │   └── TiltCard.jsx          # 3D tilt hover effect
+│   │   ├── TiltCard.jsx          # 3D tilt hover effect
+│   │   └── ProtectedRoute.jsx    # Route auth guard
 │   │
 │   ├── services/            # API service functions
 │   │   ├── auth.js               # Authentication API
@@ -106,7 +107,6 @@ npm run build
 | `/courses/:id` | `CourseDetails` | View course details, lessons, enroll |
 | `/articles` | `Articles` | Browse all articles |
 | `/articles/:id` | `ArticleDetails` | Read article |
-| `/games/tictactoe` | `TicTacToe` | Tic Tac Toe game |
 | `/about` | `About` | About the platform |
 | `/contact` | `Contact` | Contact form and info |
 
@@ -118,6 +118,7 @@ npm run build
 | `/dashboard` | `StudentDashboard` | Students | View enrolled courses |
 | `/articles/create` | `CreateArticle` | All users | Write new article |
 | `/articles/:id/edit` | `EditArticle` | Article owner | Edit own article |
+| `/games/tictactoe` | `TicTacToe` | All users | Tic Tac Toe brain game |
 
 ### Instructor Routes
 
