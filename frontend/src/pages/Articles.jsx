@@ -14,6 +14,13 @@ import { toast } from "sonner";
 
 const categories = ["All", "Development", "Design", "Backend", "AI/ML", "Trends"];
 
+// Utility function to strip HTML tags from rich text content
+const stripHtml = (html) => {
+  if (!html) return "";
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  return doc.body.textContent || "";
+};
+
 export default function Articles() {
   const [articles, setArticles] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -167,8 +174,8 @@ export default function Articles() {
                   <h3 className="font-display font-bold mb-2 text-xl line-clamp-2">
                     {article.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-                    {article.content}
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-1">
+                    {stripHtml(article.content)}
                   </p>
 
                   <div className="flex justify-between items-center border-t pt-4">

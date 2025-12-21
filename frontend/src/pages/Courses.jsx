@@ -144,7 +144,7 @@ export default function Courses() {
 
                 <div className="p-5">
                   <h3 className="font-display font-bold mb-2">{course.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-1">
                     {course.shortDescription || "No description"}
                   </p>
 

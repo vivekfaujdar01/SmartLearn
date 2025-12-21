@@ -163,7 +163,7 @@ export default function Profile() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Tabs */}
-          <aside className="lg:w-64 flex-shrink-0">
+          <aside className="lg:w-64 shrink-0">
             <nav className="bg-card border border-border rounded-2xl p-2 shadow-card">
               {tabs.map(tab => {
                 const Icon = tab.icon;

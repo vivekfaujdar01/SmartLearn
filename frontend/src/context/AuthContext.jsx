@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    toast.success("Logged out successfully");
+    toast.success("Logged out successfully", { duration: 1000 });
     // Optional: Navigate to home or login?
     // window.location.href = "/"; // or use useNavigate if inside router context
   };
