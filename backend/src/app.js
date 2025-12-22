@@ -41,7 +41,7 @@ const generalLimiter = rateLimit({
 // Stricter rate limiting for auth routes (prevent brute force)
 const authLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 10, // limit each IP to 10 auth requests per hour
+    max: 60, // limit each IP to 60 auth requests per hour
     message: { message: 'Too many authentication attempts, please try again after an hour.' }
 });
 
