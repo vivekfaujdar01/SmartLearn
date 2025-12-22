@@ -227,7 +227,7 @@ export default function TicTacToe() {
         {/* Game Mode Selector */}
         <div className="flex justify-center gap-4 mb-8">
           <button
-            onClick={() => { setGameMode('pvp'); resetGame(); }}
+            onClick={() => { setGameMode('pvp'); resetAll(); }}
             className={`
               flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-200
               ${gameMode === 'pvp' 
@@ -240,7 +240,7 @@ export default function TicTacToe() {
             2 Players
           </button>
           <button
-            onClick={() => { setGameMode('ai'); resetGame(); }}
+            onClick={() => { setGameMode('ai'); resetAll(); }}
             className={`
               flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-200
               ${gameMode === 'ai' 
