@@ -14,6 +14,7 @@ export const enrollUser = asyncHandler(async (req, res) => {
         return res.status(404).json({ message: 'Course not found' });
     }
 
+    
     // Check if already enrolled
     const existingEnrollment = await Enrollment.findOne({ user: userId, course: courseId });
     if (existingEnrollment) {

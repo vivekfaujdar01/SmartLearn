@@ -11,6 +11,7 @@ import articleRoutes from './routes/articleRoutes.js';
 import adminArticleRoutes from './routes/adminArticleRoutes.js';
 import lessonRoutes from './routes/lessonRoutes.js';
 import enrollmentRoutes from './routes/enrollmentRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
 
 
 const app = express();
@@ -57,6 +58,7 @@ app.use('/api/articles', articleRoutes);
 app.use('/api/admin', adminArticleRoutes);
 app.use('/api/lessons', lessonRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // test route
 app.get('/', (req, res) => {

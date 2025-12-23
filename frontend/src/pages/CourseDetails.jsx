@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { getCourseById, getLessonsByCourseId, deleteLesson } from "../services/courseService";
-import { enrollInCourse, checkEnrollmentStatus } from "../services/enrollmentService";
+import { enrollInCourse, checkEnrollmentStatus, createPaymentOrder, verifyPayment } from "../services/enrollmentService";
 import { useAuth } from "../context/AuthContext";
 
 export default function CourseDetails() {
@@ -72,11 +72,70 @@ export default function CourseDetails() {
 
     setEnrollLoading(true);
     try {
-      await enrollInCourse(id);
-      setIsEnrolled(true);
-      toast.success("Successfully enrolled in the course!");
+      // Create payment order (handles free courses too)
+      const orderData = await createPaymentOrder(id);
+      
+      // If it's a free course, enrollment is already done
+      if (orderData.isFree) {
+        setIsEnrolled(true);
+        toast.success("Successfully enrolled in the course!");
+        return;
+      }
+
+      // For paid courses, open Razorpay checkout
+      const options = {
+        key: orderData.key,
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
+        name: "SmartLearn",
+        description: `Enroll in ${orderData.course.title}`,
+        order_id: orderData.order.id,
+        handler: async function (response) {
+          try {
+            // Verify payment on backend
+            await verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              courseId: id
+            });
+            setIsEnrolled(true);
+            toast.success("Payment successful! You're now enrolled.");
+          } catch (err) {
+            toast.error(err.message || "Payment verification failed");
+          }
+        },
+        prefill: {
+          name: user.name || "",
+          email: user.email || ""
+        },
+        theme: {
+          color: "#0f766e" // teal-700
+        },
+        modal: {
+          ondismiss: function() {
+            setEnrollLoading(false);
+            toast.info("Payment cancelled");
+          }
+        }
+      };
+
+      // Load Razorpay script if not loaded
+      if (!window.Razorpay) {
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.async = true;
+        script.onload = () => {
+          const rzp = new window.Razorpay(options);
+          rzp.open();
+        };
+        document.body.appendChild(script);
+      } else {
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      }
     } catch (err) {
-      toast.error(err.message || "Failed to enroll");
+      toast.error(err.message || "Failed to initiate payment");
     } finally {
       setEnrollLoading(false);
     }

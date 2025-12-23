@@ -14,6 +14,20 @@ const enrollmentSchema = new mongoose.Schema({
     enrolledAt: {
         type: Date,
         default: Date.now
+    },
+    // Razorpay payment fields
+    paymentId: {
+        type: String,
+        default: null
+    },
+    orderId: {
+        type: String,
+        default: null
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['pending', 'completed', 'failed', 'free'],
+        default: 'pending'
     }
 });
 
