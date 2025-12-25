@@ -1,7 +1,8 @@
-import express from 'express';
-import auth from '../middlewares/authMiddleware.js';
-import requireRole from '../middlewares/roleMiddleware.js';
-import articleOwnership from '../middlewares/articleOwnership.js';
+// Article Routes - Handles CRUD endpoints for articles/blog posts
+import express from 'express'; // Express framework for routing
+import auth from '../middlewares/authMiddleware.js'; // Authentication middleware
+import requireRole from '../middlewares/roleMiddleware.js'; // Role-based authorization
+import articleOwnership from '../middlewares/articleOwnership.js'; // Article ownership verification
 import {
   createArticle,
   getAllArticles,
@@ -10,12 +11,17 @@ import {
   updateArticle,
   deleteArticle,
   toggleLike
-} from '../controllers/articleController.js';
+} from '../controllers/articleController.js'; // Article controller functions
 
-const router = express.Router();
+const router = express.Router(); // Create Express router instance
 
-// public
+// ========== Public Routes ==========
+
+// GET /api/articles - List all articles with optional filters (category, search)
 router.get('/', getAllArticles);
+
+// GET /api/articles/my/articles - Get articles created by current user
+// Protected: requires authentication
 router.get(
   '/my/articles',
   auth,
@@ -23,9 +29,13 @@ router.get(
   getMyArticles
 );
 
+// GET /api/articles/:id - Get single article by ID (also increments view count)
 router.get('/:id', getArticleById);
 
-// protected
+// ========== Protected Routes ==========
+
+// POST /api/articles - Create a new article
+// Requires authentication - any logged-in user can create articles
 router.post(
   '/',
   auth,
@@ -35,22 +45,27 @@ router.post(
 
 
 
+// PUT /api/articles/:id - Update an existing article
+// Requires authentication + ownership check (author or admin only)
 router.put(
   '/:id',
   auth,
   requireRole('student', 'instructor', 'admin'),
-  articleOwnership,
+  articleOwnership, // Verifies user owns the article or is admin
   updateArticle
 );
 
+// DELETE /api/articles/:id - Delete an article
+// Requires authentication + ownership check (author or admin only)
 router.delete(
   '/:id',
   auth,
-  articleOwnership,
+  articleOwnership, // Verifies user owns the article or is admin
   deleteArticle
 );
 
-// Toggle Like
+// POST /api/articles/:id/like - Toggle like on an article
+// Requires authentication - any logged-in user can like/unlike
 router.post(
   '/:id/like',
   auth,
@@ -58,4 +73,4 @@ router.post(
   toggleLike
 );
 
-export default router;
+export default router; // Export router for mounting in app.js

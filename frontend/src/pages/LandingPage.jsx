@@ -141,7 +141,7 @@ export default function LandingPage() {
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-foreground/20 text-primary-foreground text-sm font-medium mb-6 backdrop-blur-sm">
               <Sparkles className="w-4 h-4" />
-              #1 Learning Platform for Professionals
+              Learning Platform for Professionals
             </div>
             
             <h1 className="text-4xl sm:text-5xl lg:text-7xl font-display font-extrabold text-primary-foreground mb-6 leading-tight">
@@ -173,7 +173,7 @@ export default function LandingPage() {
 
             </div>
           </div>
-        </div>
+          </div>
       </section>
 
       {/* Stats Section */}
