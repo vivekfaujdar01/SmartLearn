@@ -223,6 +223,39 @@ const isEnrolled = await enrollmentService.checkEnrollment(courseId);
 const enrollments = await enrollmentService.getMyEnrollments();
 ```
 
+### Payment Service (Razorpay Integration)
+
+Payment processing is handled directly in `CourseDetails.jsx` using Razorpay:
+
+```javascript
+// 1. Create order for course purchase
+const orderData = await enrollmentService.createOrder(courseId);
+
+// 2. If course is free, enrollment is automatic
+if (orderData.isFree) {
+  // User is now enrolled
+}
+
+// 3. For paid courses, open Razorpay checkout
+const options = {
+  key: orderData.key,
+  amount: orderData.order.amount,
+  currency: 'INR',
+  order_id: orderData.order.id,
+  handler: async (response) => {
+    // 4. Verify payment after successful checkout
+    await enrollmentService.verifyPayment({
+      razorpay_order_id: response.razorpay_order_id,
+      razorpay_payment_id: response.razorpay_payment_id,
+      razorpay_signature: response.razorpay_signature,
+      courseId
+    });
+  }
+};
+const razorpay = new window.Razorpay(options);
+razorpay.open();
+```
+
 ### User Service (`services/userService.js`)
 
 ```javascript
@@ -353,6 +386,12 @@ function ProfileButton() {
 ### Games
 - Tic Tac Toe with AI and PvP modes
 - Win tracking
+
+### Payments
+- Razorpay integration for course purchases
+- UPI and Netbanking support
+- Free course instant enrollment
+- Secure payment verification
 
 ---
 

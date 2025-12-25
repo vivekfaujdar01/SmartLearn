@@ -69,6 +69,8 @@ JWT_SECRET=your_jwt_secret_key
 JWT_EXPIRES_IN=7d
 CORS_ORIGIN=http://localhost:5173
 ADMIN_SECRET=your_admin_secret_key
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 ```
 
 Start the backend server:
@@ -110,6 +112,7 @@ npm run dev
 | `/api/admin` | Admin-only routes |
 | `/api/enrollments` | Course enrollment |
 | `/api/lessons` | Lesson management |
+| `/api/payments` | Razorpay payment processing |
 
 > **📖 For complete API documentation with request/response examples, see [`backend/README.md`](./backend/README.md)**
 
@@ -156,6 +159,7 @@ npm run dev
 - **MongoDB + Mongoose** - Database & ODM
 - **JWT** - Authentication tokens
 - **bcryptjs** - Password hashing
+- **Razorpay** - Payment gateway integration
 - **CORS** - Cross-origin support
 
 ### Frontend
@@ -225,6 +229,8 @@ SmartLearn implements multiple layers of security to protect user data and preve
 | `JWT_EXPIRES_IN` | Token expiration | `7d` |
 | `CORS_ORIGIN` | Allowed origins (comma-separated) | `http://localhost:5173` |
 | `ADMIN_SECRET` | Secret for admin registration/login | `admin-secret-key` |
+| `RAZORPAY_KEY_ID` | Razorpay public API key | `rzp_test_xxx` |
+| `RAZORPAY_KEY_SECRET` | Razorpay secret key | `your-secret` |
 
 ### Frontend (`frontend/.env`)
 

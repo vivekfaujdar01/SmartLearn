@@ -11,13 +11,16 @@ backend/
 ├── src/
 │   ├── app.js              # Express app configuration
 │   ├── index.js            # Server entry point
-│   ├── config/             # Database configuration
+│   ├── config/             # Database & payment configuration
+│   │   ├── db.js           # MongoDB connection
+│   │   └── razorpay.js     # Razorpay configuration
 │   ├── controllers/        # Request handlers
 │   │   ├── auth.js         # Register/Login
 │   │   ├── courseController.js
 │   │   ├── articleController.js
 │   │   ├── enrollmentController.js
-│   │   └── lessonController.js
+│   │   ├── lessonController.js
+│   │   └── paymentController.js
 │   ├── models/             # Mongoose schemas
 │   │   ├── User.js
 │   │   ├── Course.js
@@ -31,7 +34,8 @@ backend/
 │   │   ├── articleRoutes.js
 │   │   ├── adminArticleRoutes.js
 │   │   ├── enrollmentRoutes.js
-│   │   └── lessonRoutes.js
+│   │   ├── lessonRoutes.js
+│   │   └── paymentRoutes.js
 │   └── middlewares/
 │       ├── authMiddleware.js      # JWT verification
 │       ├── roleMiddleware.js      # Role-based access
@@ -57,6 +61,8 @@ JWT_SECRET=your_jwt_secret_key
 JWT_EXPIRES_IN=7d
 CORS_ORIGIN=http://localhost:5173
 ADMIN_SECRET=your_admin_secret_key
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 ```
 
 Run:
@@ -579,6 +585,84 @@ Delete a lesson.
 
 ---
 
+### Payment Routes (`/api/payments`)
+
+#### GET `/api/payments/key`
+Get Razorpay public key for frontend initialization.
+
+**Response (200):**
+```json
+{
+  "key": "rzp_test_xxxxx"
+}
+```
+
+---
+
+#### POST `/api/payments/create-order` 🔒
+Create Razorpay order for course purchase.
+
+**Request Body:**
+```json
+{
+  "courseId": "664abc..."
+}
+```
+
+**Response (200) - Paid Course:**
+```json
+{
+  "success": true,
+  "order": {
+    "id": "order_xxx",
+    "amount": 4999,
+    "currency": "INR"
+  },
+  "course": {
+    "id": "664abc...",
+    "title": "React Masterclass",
+    "price": 49.99
+  },
+  "key": "rzp_test_xxx"
+}
+```
+
+**Response (201) - Free Course:**
+```json
+{
+  "success": true,
+  "message": "Enrolled successfully (Free Course)",
+  "enrollment": { ... },
+  "isFree": true
+}
+```
+
+---
+
+#### POST `/api/payments/verify` 🔒
+Verify payment and complete enrollment.
+
+**Request Body:**
+```json
+{
+  "razorpay_order_id": "order_xxx",
+  "razorpay_payment_id": "pay_xxx",
+  "razorpay_signature": "xxx",
+  "courseId": "664abc..."
+}
+```
+
+**Response (201):**
+```json
+{
+  "success": true,
+  "message": "Payment verified and enrolled successfully!",
+  "enrollment": { ... }
+}
+```
+
+---
+
 ## ⚠️ Error Responses
 
 | Status | Description |
@@ -607,6 +691,7 @@ Delete a lesson.
 | `mongoose` | MongoDB ODM |
 | `jsonwebtoken` | JWT authentication |
 | `bcryptjs` | Password hashing |
+| `razorpay` | Payment gateway integration |
 | `cors` | Cross-origin support |
 | `dotenv` | Environment variables |
 | `slugify` | URL slug generation |
