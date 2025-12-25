@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"; // React hooks for state management and side effects
+import { useState, useEffect, useCallback } from "react"; // React hooks for state management, side effects, and memoization
 import { fetchArticles, likeArticle, deleteArticle } from "../services/articleService"; // API functions for article operations
 import { Link, useNavigate } from "react-router-dom"; // React Router components for navigation
 import { 
@@ -34,8 +34,9 @@ export default function Articles() {
   const isAdmin = user?.role === "admin"; // Check if user is admin
   const canCreate = user && (user.role === 'student' || user.role === 'instructor' || user.role === 'admin'); // Check if user can create articles
 
-  // Function to load articles from API with filters
-  const loadArticles = async () => {
+  // Memoized function to load articles from API with filters
+  // useCallback ensures stable function reference across re-renders
+  const loadArticles = useCallback(async () => {
     setLoading(true); // Set loading state
     setError(""); // Clear previous errors
     try {
@@ -50,7 +51,7 @@ export default function Articles() {
     } finally {
       setLoading(false); // Reset loading state
     }
-  };
+  }, [selectedCategory, searchQuery, isAdmin, token]); // Dependencies for memoization
 
   // Effect to reload articles when category or auth state changes
   useEffect(() => {
