@@ -52,31 +52,30 @@ export default function ArticleList({ articles, emptyMessage = "No articles foun
             </div>
             <div className="p-4">
                 <h3 className="font-bold line-clamp-1 mb-1 group-hover:text-primary transition-colors">{article.title}</h3>
-                <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {new Date(article.createdAt).toLocaleDateString()}</span>
                   <span className="flex items-center gap-1"><Heart className="w-3 h-3" /> {article.likes?.length || 0}</span>
                 </div>
-
-                {canManage && (
-                  <div className="flex gap-28 mt-2 pt-3 border-t border-border">
-                      <Link 
-                        to={`/articles/${article._id}/edit`} 
-                        className="flex-1 px-3 py-2 bg-primary/10 text-primary rounded-lg text-sm font-medium text-center hover:bg-primary/20 transition flex items-center justify-center gap-2"
-                      >
-                           Edit
-                      </Link>
-                      <button 
-                        onClick={(e) => handleDelete(e, article._id)}
-                        className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition flex items-center justify-center"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                  </div>
-                )}
             </div>
           </Link>
           
+          {canManage && (
+            <div className="flex gap-2 px-4 pb-4 pt-3 border-t border-border">
+                <Link 
+                  to={`/articles/${article._id}/edit`} 
+                  className="flex-1 px-3 py-2 bg-primary/10 text-primary rounded-lg text-sm font-medium text-center hover:bg-primary/20 transition flex items-center justify-center gap-2"
+                >
+                     Edit
+                </Link>
+                <button 
+                  onClick={(e) => handleDelete(e, article._id)}
+                  className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition flex items-center justify-center"
+                  title="Delete"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+            </div>
+          )}
         </div>
       )})} 
     </div>
